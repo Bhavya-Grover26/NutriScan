@@ -11,30 +11,31 @@ import {
 
 import Ionicons from "react-native-vector-icons/Ionicons";
 
-export default function LoginScreen({ navigation }) {
+export default function SignupScreen({ navigation }) {
   const [passwordVisible, setPasswordVisible] = React.useState(false);
 
   return (
     <SafeAreaView style={styles.container}>
-       <Text style={styles.title}>Log In</Text>
+      {/* Header */}
+      <Text style={styles.title}>New Account</Text>
+
+      {/* White Card */}
       <View style={styles.whiteCard}>
-      <Text style={styles.welcometitle}>Welcome</Text>
-        <Text style={styles.welcomeText}>
-          Log in to access personalized nutritional insights, allergen alerts,
-          and smart product comparisons. Let’s help you make healthier and safer
-          food choices effortlessly!
-        </Text>
-        <View style={styles.inputContainer}>
+        <View style={styles.inputGroup}>
+          <Text style={styles.inputLabel}>Full Name</Text>
           <TextInput
             style={styles.input}
-            placeholder="Email or Mobile Number"
-            keyboardType="email-address"
+            placeholder="Enter your full name"
             placeholderTextColor="#6C757D"
           />
+        </View>
+
+        <View style={styles.inputGroup}>
+          <Text style={styles.inputLabel}>Password</Text>
           <View style={styles.passwordContainer}>
             <TextInput
               style={styles.inputPassword}
-              placeholder="Password"
+              placeholder="Enter your password"
               secureTextEntry={!passwordVisible}
               placeholderTextColor="#6C757D"
             />
@@ -50,15 +51,45 @@ export default function LoginScreen({ navigation }) {
           </View>
         </View>
 
-        <TouchableOpacity>
-          <Text style={styles.forgotPassword}>Forgot Password</Text>
-        </TouchableOpacity>
+        <View style={styles.inputGroup}>
+          <Text style={styles.inputLabel}>Email</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Enter your email"
+            keyboardType="email-address"
+            placeholderTextColor="#6C757D"
+          />
+        </View>
 
-        <TouchableOpacity style={styles.loginButton}>
-          <Text style={styles.loginButtonText}>Log In</Text>
+        <View style={styles.inputGroup}>
+          <Text style={styles.inputLabel}>Mobile Number</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Enter your mobile number"
+            keyboardType="phone-pad"
+            placeholderTextColor="#6C757D"
+          />
+        </View>
+
+        <View style={styles.inputGroup}>
+          <Text style={styles.inputLabel}>Date of Birth</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="DD / MM / YYYY"
+            placeholderTextColor="#6C757D"
+          />
+        </View>
+
+        <Text style={styles.agreementText}>
+          By continuing, you agree to Terms of Use and Privacy Policy.
+        </Text>
+
+        <TouchableOpacity style={styles.signupButton}>
+          <Text style={styles.signupButtonText}>Sign Up</Text>
         </TouchableOpacity>
 
         <Text style={styles.orText}>or sign up with</Text>
+
         <View style={styles.socialButtons}>
           <TouchableOpacity style={styles.socialButton}>
             <Ionicons name="logo-google" size={24} color="#4CAF50" />
@@ -70,13 +101,15 @@ export default function LoginScreen({ navigation }) {
             <Ionicons name="finger-print" size={24} color="#4CAF50" />
           </TouchableOpacity>
         </View>
-        <TouchableOpacity onPress={() => navigation.navigate("Signup")}>
-  <Text style={styles.signupText}>Don’t have an account? <Text style={styles.signupLink}>Sign Up</Text></Text>
-</TouchableOpacity>
 
+        <TouchableOpacity onPress={() => navigation.navigate("Login")}>
+          <Text style={styles.loginText}>
+            Already have an account? <Text style={styles.loginLink}>Log In</Text>
+          </Text>
+        </TouchableOpacity>
       </View>
 
-      {/* Green curved rectangle */}
+      {/* Green Curved Rectangle */}
       <View style={styles.greenRectangle}></View>
     </SafeAreaView>
   );
@@ -89,15 +122,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#FFFBEA",
   },
-  whiteCard: {
-    flex: 1,
-    backgroundColor: "#FFFFFF",
-    borderTopLeftRadius: 30,
-    borderTopRightRadius: 30,
-    padding: 20,
-    marginTop: 75,
-    elevation: 5,
-  },
   title: {
     fontSize: 28,
     marginTop: 40,
@@ -105,34 +129,35 @@ const styles = StyleSheet.create({
     color: "#2E7D32",
     textAlign: "center",
   },
-  welcometitle: {
-    fontSize: 20,
-    fontWeight: "bold",
-    color: "black",
-    textAlign: "left",
+  whiteCard: {
+    flex: 1,
+    backgroundColor: "#FFFFFF",
+    borderTopLeftRadius: 30,
+    borderTopRightRadius: 30,
+    padding: 20,
+    marginTop: 20,
+    elevation: 5,
   },
-  welcomeText: {
+  inputGroup: {
+    marginBottom: 10,
+  },
+  inputLabel: {
     fontSize: 14,
-    color: "#5A5A5A",
-    textAlign: "left",
-    marginBottom: 30,
-  },
-  inputContainer: {
-    marginBottom: 20,
+    color: "#000",
+    marginBottom: 5,
   },
   input: {
     backgroundColor: "#FFF4C4",
     padding: 12,
     borderRadius: 8,
-    marginBottom: 10,
-    fontSize: 16,
+    fontSize: 14,
     color: "#000",
   },
   inputPassword: {
     flex: 1,
     backgroundColor: "#FFF4C4",
     padding: 12,
-    fontSize: 16,
+    fontSize: 14,
     color: "#000",
   },
   passwordContainer: {
@@ -142,19 +167,20 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     paddingHorizontal: 10,
   },
-  forgotPassword: {
-    textAlign: "right",
-    color: "#1B623B",
-    marginBottom: 20,
+  agreementText: {
+    fontSize: 12,
+    color: "#6C757D",
+    textAlign: "center",
+    marginBottom: 7,
   },
-  loginButton: {
+  signupButton: {
     backgroundColor: "#1B623B",
     padding: 15,
     borderRadius: 8,
     alignItems: "center",
-    marginBottom: 20,
+    marginBottom: 7,
   },
-  loginButtonText: {
+  signupButtonText: {
     color: "#FFF",
     fontSize: 16,
     fontWeight: "bold",
@@ -171,14 +197,14 @@ const styles = StyleSheet.create({
   },
   socialButton: {
     backgroundColor: "#FFF4C4",
-    padding: 13,
+    padding: 8,
     borderRadius: 50,
   },
-  signupText: {
+  loginText: {
     textAlign: "center",
-    color: "black",
+    color: "#6C757D",
   },
-  signupLink: {
+  loginLink: {
     color: "#1B623B",
     fontWeight: "bold",
   },
@@ -186,7 +212,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     bottom: 0,
     width: width,
-    height: height * 0.07,
+    height: height * 0.02,
     backgroundColor: "#1B623B",
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
