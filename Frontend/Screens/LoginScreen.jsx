@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -7,18 +7,62 @@ import {
   StyleSheet,
   SafeAreaView,
   Dimensions,
+  Alert,
 } from "react-native";
 
 import Ionicons from "react-native-vector-icons/Ionicons";
 
 export default function LoginScreen({ navigation }) {
-  const [passwordVisible, setPasswordVisible] = React.useState(false);
+  const [passwordVisible, setPasswordVisible] = useState(false);
+  const [password, setPassword] = useState("");
+  const [name, setName] = useState("");
+
+  const handleLogin = async () => {
+    if (!name || !password) {
+      Alert.alert("Error", "Please enter both name and password.");
+      return;
+    }
+  
+    try {
+      const response = await fetch("http://192.168.1.6:5001/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: name,
+          password: password,
+        }),
+      });
+  
+      // Check if the response is valid JSON
+      const text = await response.text();  // Read the raw response
+  
+      try {
+        const data = JSON.parse(text);  // Try to parse as JSON
+        
+        if (data.status === "ok") {
+          Alert.alert("Success", "You are logged in!");
+          navigation.navigate("Home");
+        } else {
+          Alert.alert("Error", data.message || "Invalid credentials");
+        }
+      } catch (parseError) {
+        Alert.alert("Error", "Invalid response from server");
+        console.error("Response was not JSON:", text);
+      }
+    } catch (error) {
+      Alert.alert("Error", "An error occurred while logging in.");
+      console.error("Login error:", error);
+    }
+  };
+  
 
   return (
     <SafeAreaView style={styles.container}>
-       <Text style={styles.title}>Log In</Text>
+      <Text style={styles.title}>Log In</Text>
       <View style={styles.whiteCard}>
-      <Text style={styles.welcometitle}>Welcome</Text>
+        <Text style={styles.welcometitle}>Welcome</Text>
         <Text style={styles.welcomeText}>
           Log in to access personalized nutritional insights, allergen alerts,
           and smart product comparisons. Let’s help you make healthier and safer
@@ -27,9 +71,10 @@ export default function LoginScreen({ navigation }) {
         <View style={styles.inputContainer}>
           <TextInput
             style={styles.input}
-            placeholder="Email or Mobile Number"
-            keyboardType="email-address"
+            placeholder="Full Name"
             placeholderTextColor="#6C757D"
+            value={name}
+            onChangeText={setName}
           />
           <View style={styles.passwordContainer}>
             <TextInput
@@ -37,6 +82,8 @@ export default function LoginScreen({ navigation }) {
               placeholder="Password"
               secureTextEntry={!passwordVisible}
               placeholderTextColor="#6C757D"
+              value={password}
+              onChangeText={setPassword}
             />
             <TouchableOpacity
               onPress={() => setPasswordVisible(!passwordVisible)}
@@ -54,7 +101,7 @@ export default function LoginScreen({ navigation }) {
           <Text style={styles.forgotPassword}>Forgot Password</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.loginButton}>
+        <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
           <Text style={styles.loginButtonText}>Log In</Text>
         </TouchableOpacity>
 
@@ -71,9 +118,10 @@ export default function LoginScreen({ navigation }) {
           </TouchableOpacity>
         </View>
         <TouchableOpacity onPress={() => navigation.navigate("Signup")}>
-  <Text style={styles.signupText}>Don’t have an account? <Text style={styles.signupLink}>Sign Up</Text></Text>
-</TouchableOpacity>
-
+          <Text style={styles.signupText}>
+            Don’t have an account? <Text style={styles.signupLink}>Sign Up</Text>
+          </Text>
+        </TouchableOpacity>
       </View>
 
       {/* Green curved rectangle */}

@@ -7,6 +7,7 @@ import Onboarding1 from './Screens/Onboarding1';
 import Onboarding2 from './Screens/Onboarding2'; 
 import Onboarding3 from './Screens/Onboarding3'; 
 import Onboarding4 from './Screens/Onboarding4'; 
+import HomeScreen from './Screens/HomeScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -42,6 +43,11 @@ export default function App() {
         <Stack.Screen
           name="Signup"
           component={SignupScreen}
+          options={{ headerShown: false }}
+        />  
+        <Stack.Screen
+          name="Home"
+          component={HomeScreen}
           options={{ headerShown: false }}
         />  
       </Stack.Navigator>
