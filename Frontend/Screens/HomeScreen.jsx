@@ -1,15 +1,16 @@
 import React from 'react';
 import { View, Text, Button, StyleSheet } from 'react-native';
 
-function HomeScreen() {
+export default function HomeScreen({ navigation }) {
   console.log('HomeScreen Loaded');
-  
+
   const handleScanBarcode = () => {
     console.log("Scan Barcode button clicked");
   };
 
   const handleCompareProduct = () => {
     console.log("Compare Product button clicked");
+    navigation.navigate('Compare');  // Ensure the name matches exactly
   };
 
   return (
@@ -42,5 +43,3 @@ const styles = StyleSheet.create({
     marginVertical: 10,
   },
 });
-
-export default HomeScreen;
