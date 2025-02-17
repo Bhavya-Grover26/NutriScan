@@ -9,6 +9,7 @@ import Onboarding3 from './Screens/Onboarding3';
 import Onboarding4 from './Screens/Onboarding4'; 
 import HomeScreen from './Screens/HomeScreen';
 import CompareProduct from './Screens/CompareProduct';
+import BottomNavBar from './Screens/BottomNavBar';
 
 const Stack = createNativeStackNavigator();
 
@@ -54,6 +55,11 @@ export default function App() {
         <Stack.Screen
           name="Compare"
           component={CompareProduct}
+          options={{ headerShown: false }}
+        />  
+        <Stack.Screen
+          name="Bottombar"
+          component={BottomNavBar}
           options={{ headerShown: false }}
         />  
       </Stack.Navigator>

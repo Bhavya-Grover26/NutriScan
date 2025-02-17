@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, Button, StyleSheet } from 'react-native';
+import BottomNavBar from './BottomNavBar';
 
 export default function HomeScreen({ navigation }) {
   console.log('HomeScreen Loaded');
@@ -22,6 +23,9 @@ export default function HomeScreen({ navigation }) {
       <View style={styles.buttonContainer}>
         <Button title="Compare Product" onPress={handleCompareProduct} />
       </View>
+      <View style={{ height: 60, width: '100%' }}>
+        <BottomNavBar />
+      </View>
     </View>
   );
 }
@@ -29,7 +33,6 @@ export default function HomeScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
     alignItems: 'center',
     padding: 16,
   },
