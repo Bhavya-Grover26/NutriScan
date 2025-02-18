@@ -11,7 +11,7 @@ export default function HomeScreen({ navigation }) {
 
   const handleCompareProduct = () => {
     console.log("Compare Product button clicked");
-    navigation.navigate('Compare');  // Ensure the name matches exactly
+    navigation.navigate('Compare');  
   };
 
   return (

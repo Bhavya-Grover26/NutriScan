@@ -10,6 +10,7 @@ import Onboarding4 from './Screens/Onboarding4';
 import HomeScreen from './Screens/HomeScreen';
 import CompareProduct from './Screens/CompareProduct';
 import BottomNavBar from './Screens/BottomNavBar';
+import Categories from './Screens/Categories';
 
 const Stack = createNativeStackNavigator();
 
@@ -60,6 +61,11 @@ export default function App() {
         <Stack.Screen
           name="Bottombar"
           component={BottomNavBar}
+          options={{ headerShown: false }}
+        />  
+        <Stack.Screen
+          name="Categories"
+          component={Categories}
           options={{ headerShown: false }}
         />  
       </Stack.Navigator>
