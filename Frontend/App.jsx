@@ -11,6 +11,7 @@ import HomeScreen from './Screens/HomeScreen';
 import CompareProduct from './Screens/CompareProduct';
 import BottomNavBar from './Screens/BottomNavBar';
 import Categories from './Screens/Categories';
+import SpecificCategories from './Screens/SpecificCategories';
 
 const Stack = createNativeStackNavigator();
 
@@ -66,6 +67,11 @@ export default function App() {
         <Stack.Screen
           name="Categories"
           component={Categories}
+          options={{ headerShown: false }}
+        />  
+        <Stack.Screen
+          name="SpecificCategories"
+          component={SpecificCategories}
           options={{ headerShown: false }}
         />  
       </Stack.Navigator>
