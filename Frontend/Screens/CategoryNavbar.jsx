@@ -12,23 +12,6 @@ const categories = [
   { key: 'chips', name: 'Chips', icon: 'baguette' },
 ];
 
-const products = [
-  {
-    id: '1',
-    name: 'The health factory zero maida bun - pack of 2',
-    brand: 'The Health Factory',
-    score: '100/100',
-    image: 'https://example.com/bread-image1.jpg',
-  },
-  {
-    id: '2',
-    name: 'The health factory zero maida protein bread',
-    brand: 'The Health Factory',
-    score: '100/100',
-    image: 'https://example.com/bread-image2.jpg',
-  },
-  // Add more products as necessary
-];
 
 const SpecificCategories = () => {
   const [selectedCategory, setSelectedCategory] = useState('bread');

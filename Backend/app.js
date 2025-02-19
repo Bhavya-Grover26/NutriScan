@@ -6,8 +6,10 @@ app.use(express.json());
 const mongoUrl="mongodb+srv://pfa2nd:QHJBuTHwoPLOWqVz@cluster0.jg69u.mongodb.net/AppData?retryWrites=true&w=majority&appName=Cluster0"
 
 require('./models/UserDetails')
+require('./models/SpecificCategory')
 
 app.use(require('./routes/authentication'))
+app.use(require('./routes/specificcat'))
 
 app.get("/",(req,res)=>{
   res.send({status:"Started"})

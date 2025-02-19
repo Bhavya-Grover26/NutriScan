@@ -1,57 +1,67 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, TextInput, ScrollView, Image, TouchableOpacity, StyleSheet } from 'react-native';
 import { IconButton } from 'react-native-paper';
 import CategoryNavbar from './CategoryNavbar';
 
 const SpecificCategories = () => {
-  const breadItems = [
-    { name: 'The health factory zero maida bun - pack of 2', brand: 'The Health Factory' },
-    { name: 'The health factory zero maida protein bread', brand: 'The Health Factory' },
-    { name: 'The health factory zero maida bombay pav', brand: 'The Health Factory' },
-    { name: 'The health factory zero maida multigrain bread', brand: 'The Health Factory' },
-    { name: 'The health factory zero maida whole wheat', brand: 'The Health Factory' },
-  ];
+  const [selectedCategory, setSelectedCategory] = useState("bread");  // Default category
+  const [breadItems, setBreadItems] = useState([]);
+
+  // Fetch products when selected category changes
+  useEffect(() => {
+    if (selectedCategory) {
+      fetchCategoryProducts(selectedCategory);
+    }
+  }, [selectedCategory]);
+
+  const fetchCategoryProducts = async (category) => {
+    try {
+      const formattedCategory = category.replace(/\s/g, "-"); // Convert spaces to dashes
+      const response = await fetch(`http://192.168.1.10:5001/products/${formattedCategory}`);
+      const data = await response.json();
+
+      if (!Array.isArray(data)) {
+        console.warn("Unexpected API response:", data);
+        setBreadItems([]); // Ensure no crash if response is invalid
+        return;
+      }
+
+      setBreadItems(data);
+    } catch (error) {
+      console.error("Error fetching category products:", error);
+    }
+  };
 
   return (
     <View style={styles.container}>
-      {/* Fixed Navbar */}
       <View style={styles.navbar}>
-        <CategoryNavbar />
+        <CategoryNavbar onCategorySelect={setSelectedCategory} /> 
       </View>
 
-      {/* Right Side Content */}
       <View style={styles.contentWrapper}>
-        {/* Header Section (Independent of Navbar) */}
-        <View style={styles.uppercontent}>
-        </View>
+        <View style={styles.uppercontent}></View>
         <View style={styles.header}>
           <IconButton icon="arrow-left" size={24} onPress={() => {}} />
-          <Text style={styles.headerTitle}>Bread</Text>
+          <Text style={styles.headerTitle}>{selectedCategory}</Text>
           <IconButton icon="bell-outline" size={24} onPress={() => {}} />
         </View>
 
-        {/* Search Section */}
         <View style={styles.searchContainer}>
           <TextInput style={styles.searchInput} placeholder="Search..." />
           <IconButton icon="barcode-scan" size={24} onPress={() => {}} />
         </View>
-       
 
-        {/* Main Scrollable Content */}
         <View style={styles.maincontent}>
- 
-
-          {/* Bread List */}
           <ScrollView style={styles.listContainer}>
             {breadItems.map((item, index) => (
               <View key={index} style={styles.breadItem}>
-                <Image style={styles.breadImage} source={{ uri: 'https://images.openfoodfacts.org/images/products/890/606/545/0069/front_en.3.400.jpg' }} />
+                <Image style={styles.breadImage} source={{ uri: item.image_url }} />
                 <View style={styles.breadInfo}>
-                  <Text style={styles.breadTitle}>{item.name}</Text>
-                  <Text style={styles.breadBrand}>{item.brand}</Text>
+                  <Text style={styles.breadTitle}>{item.product_name}</Text>
+                  <Text style={styles.breadBrand}>{item.brands}</Text>
                 </View>
                 <View style={styles.ratingContainer}>
-                  <Text style={styles.ratingText}>100/100</Text>
+                  <Text style={styles.ratingText}>{item.Rank}</Text>
                 </View>
               </View>
             ))}
@@ -82,15 +92,13 @@ const styles = StyleSheet.create({
   },
   uppercontent: {
     backgroundColor: 'green',
-    height: 120, // Height to cover both the header and search bar
-    position: 'absolute', // Ensure it stays in the background
+    height: 120,
+    position: 'absolute',
     top: 0,
     left: 0,
     right: 0,
     marginHorizontal: -80,
-
   },
-  
   header: {
     flexDirection: 'row',
     left: -80,
@@ -104,7 +112,6 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     color: '#000',
-
   },
   searchContainer: {
     flexDirection: 'row',
@@ -124,27 +131,6 @@ const styles = StyleSheet.create({
   },
   maincontent: {
     flex: 1,
-  },
-  infoBanner: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#FFEDD5',
-    borderRadius: 12,
-    padding: 12,
-    marginBottom: 16,
-  },
-  infoImage: {
-    width: 40,
-    height: 40,
-    marginRight: 8,
-  },
-  infoText: {
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  infoSubText: {
-    fontSize: 14,
-    color: '#F7941D',
   },
   listContainer: {
     flex: 1,
