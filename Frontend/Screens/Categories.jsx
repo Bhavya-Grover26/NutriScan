@@ -1,7 +1,11 @@
 import React from 'react';
 import { View, Text, TextInput, Image, ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
+import { IconButton } from 'react-native-paper';
+import { useNavigation } from '@react-navigation/native';
+
 
 const Categories = () => {
+  const navigation = useNavigation();
   return (
     <View style={styles.container}>
       {/* Header */}
@@ -19,13 +23,21 @@ const Categories = () => {
       {/* Scrollable Category List */}
       <ScrollView style={styles.categoryList}>
         {/* Category 1: Chips */}
-        <TouchableOpacity style={styles.categoryCard}>
+        <TouchableOpacity style={styles.categoryCard}
+          onPress={() => navigation.navigate('SpecificCategories')}>
           <Image
             source={{ uri: 'https://c8.alamy.com/comp/KA04E4/crisps-on-display-in-a-supermarket-KA04E4.jpg' }}
             style={styles.categoryImage}
           />
           <View style={styles.categoryTextContainer}>
-            <Text style={styles.categoryTitle}>Chips</Text>
+            <View style={styles.categoryHeader}>
+              <Text style={styles.categoryTitle}>Chips</Text>
+              <IconButton
+                icon="chevron-right"
+                size={24}
+                color="#2F4F2F"
+              />
+            </View>
             <Text style={styles.categoryDescription}>
               Compare the nutritional profiles of various chip brands to find the healthiest option for your snacking needs!
             </Text>
@@ -39,7 +51,14 @@ const Categories = () => {
             style={styles.categoryImage}
           />
           <View style={styles.categoryTextContainer}>
-            <Text style={styles.categoryTitle}>Ketchups</Text>
+            <View style={styles.categoryHeader}>
+              <Text style={styles.categoryTitle}>Ketchups</Text>
+              <IconButton
+                icon="chevron-right"
+                size={24}
+                color="#2F4F2F"
+              />
+            </View>
             <Text style={styles.categoryDescription}>
               Explore and compare the nutritional content of different ketchup brands to choose the best option for your diet!
             </Text>
@@ -53,7 +72,14 @@ const Categories = () => {
             style={styles.categoryImage}
           />
           <View style={styles.categoryTextContainer}>
-            <Text style={styles.categoryTitle}>Carbonated Drinks</Text>
+            <View style={styles.categoryHeader}>
+              <Text style={styles.categoryTitle}>Carbonated Drinks</Text>
+              <IconButton
+                icon="chevron-right"
+                size={24}
+                color="#2F4F2F"
+              />
+            </View>
             <Text style={styles.categoryDescription}>
               Discover and compare the sugar and calorie content of various carbonated drinks to make healthier beverage choices!
             </Text>
@@ -108,6 +134,11 @@ const styles = StyleSheet.create({
   },
   categoryTextContainer: {
     padding: 12,
+  },
+  categoryHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
   categoryTitle: {
     fontSize: 18,
