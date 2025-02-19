@@ -1,59 +1,64 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, Image, ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, ScrollView, Image, TouchableOpacity, StyleSheet } from 'react-native';
 import { IconButton } from 'react-native-paper';
 
 const categories = [
-  { key: 'all', name: 'All', icon: 'format-list-bulleted' },
-  { key: 'carbonated-soda', name: 'Soda', icon: 'bottle-soda-classic' },
-  { key: 'bread', name: 'Bread', icon: 'bread-slice' },
-  { key: 'cheese', name: 'Cheese', icon: 'cheese' },
-  { key: 'coffee', name: 'Coffee', icon: 'coffee-outline' },
-  { key: 'cookies', name: 'Cookie', icon: 'cookie' },
-  { key: 'chips', name: 'Chips', icon: 'baguette' },
+  { key: 'all', clusterName: 'all', name: 'All', icon: 'format-list-bulleted' },
+  { key: 'carbonated-soda', clusterName: 'beverages carbonated', name: 'Soda', icon: 'bottle-soda-classic' },
+  { key: 'bread', clusterName: "bread cereals", name: 'Bread', icon: 'bread-slice' },
+  { key: 'cheese', clusterName: 'cheeses cream', name: 'Cheese', icon: 'cheese' },
+  { key: 'coffee',   clusterName: ['beverages coffees', 'coffee coffees', 'beverages coffee'] , name: 'Coffee', icon: 'coffee-outline' },
+  { key: 'cookies', clusterName: 'biscuits cookies', name: 'Cookie', icon: 'cookie' },
+  { key: 'chips', clusterName: 'chips snacks', name: 'Chips', icon: 'baguette' },
 ];
 
-
-const SpecificCategories = () => {
-  const [selectedCategory, setSelectedCategory] = useState('bread');
-
-  return (
-
-
-      <View style={styles.mainContent}>
-        {/* Left Category Nav */}
+const CategoryNavbar = ({ onCategorySelect }) => {
+    const [selectedCategory, setSelectedCategory] = useState(categories[0].clusterName);
+  
+    useEffect(() => {
+      // Notify parent component about the selected category
+      onCategorySelect(selectedCategory);
+    }, [selectedCategory]);
+  
+    const handleCategorySelect = (categoryCluster) => {
+        // If clusterName is an array, join it with commas
+        const formattedCluster = Array.isArray(categoryCluster) 
+          ? categoryCluster.map((name) => name.replace(/\s/g, "-")).join(",")
+          : categoryCluster.replace(/\s/g, "-");
+      
+        setSelectedCategory(formattedCluster);
+      };
+      
+  
+    return (
+      <View style={styles.container}>
         <ScrollView style={styles.navbar}>
-  {categories.map((category) => (
-    <View>
-   <TouchableOpacity
-   key={category.key}
-   style={[
-     styles.categoryButton,
-     selectedCategory === category.key && styles.activeCategory,
-   ]}
-   onPress={() => setSelectedCategory(category.key)}
- >
-   <IconButton
-     icon={category.icon}
-     size={24}
-     color="#FFF"
-   />
- </TouchableOpacity>
- <Text
-   style={[
-     styles.categoryText,
-     selectedCategory === category.key && styles.activeCategoryText,
-   ]}
- >
-   {category.name}
- </Text>
- </View>
-
-  ))}
-</ScrollView>
-
+          {categories.map((category) => (
+            <View key={category.key}>
+              <TouchableOpacity
+                style={[
+                  styles.categoryButton,
+                  selectedCategory === category.clusterName && styles.activeCategory,
+                ]}
+                onPress={() => handleCategorySelect(category.clusterName)}
+              >
+                <IconButton icon={category.icon} size={24} color="#FFF" />
+              </TouchableOpacity>
+              <Text
+                style={[
+                  styles.categoryText,
+                  selectedCategory === category.clusterName && styles.activeCategoryText,
+                ]}
+              >
+                {category.name}
+              </Text>
+            </View>
+          ))}
+        </ScrollView>
       </View>
-  );
-};
+    );
+  };
+  
 
 const styles = StyleSheet.create({
         icon: {
@@ -162,4 +167,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default SpecificCategories;
+export default CategoryNavbar;

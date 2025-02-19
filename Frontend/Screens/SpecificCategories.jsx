@@ -4,10 +4,9 @@ import { IconButton } from 'react-native-paper';
 import CategoryNavbar from './CategoryNavbar';
 
 const SpecificCategories = () => {
-  const [selectedCategory, setSelectedCategory] = useState("bread");  // Default category
-  const [breadItems, setBreadItems] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState("bread");
+  const [categoryItems, setCategoryItems] = useState([]);
 
-  // Fetch products when selected category changes
   useEffect(() => {
     if (selectedCategory) {
       fetchCategoryProducts(selectedCategory);
@@ -16,17 +15,22 @@ const SpecificCategories = () => {
 
   const fetchCategoryProducts = async (category) => {
     try {
-      const formattedCategory = category.replace(/\s/g, "-"); // Convert spaces to dashes
+      const formattedCategory = category
+  .split(" ")                  // Split category into individual words
+  .map((part) => part.trim())  // Trim each word
+  .join("-");                  // Join with hyphens to form "bread-cereals"
       const response = await fetch(`http://192.168.1.10:5001/products/${formattedCategory}`);
+      console.log("Fetching products from URL:", response);
+
       const data = await response.json();
 
       if (!Array.isArray(data)) {
         console.warn("Unexpected API response:", data);
-        setBreadItems([]); // Ensure no crash if response is invalid
+        setCategoryItems([]);
         return;
       }
 
-      setBreadItems(data);
+      setCategoryItems(data);
     } catch (error) {
       console.error("Error fetching category products:", error);
     }
@@ -35,7 +39,8 @@ const SpecificCategories = () => {
   return (
     <View style={styles.container}>
       <View style={styles.navbar}>
-        <CategoryNavbar onCategorySelect={setSelectedCategory} /> 
+        {/* Pass the setSelectedCategory callback to CategoryNavbar */}
+        <CategoryNavbar onCategorySelect={setSelectedCategory} />
       </View>
 
       <View style={styles.contentWrapper}>
@@ -53,7 +58,7 @@ const SpecificCategories = () => {
 
         <View style={styles.maincontent}>
           <ScrollView style={styles.listContainer}>
-            {breadItems.map((item, index) => (
+            {categoryItems.map((item, index) => (
               <View key={index} style={styles.breadItem}>
                 <Image style={styles.breadImage} source={{ uri: item.image_url }} />
                 <View style={styles.breadInfo}>
