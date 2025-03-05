@@ -7,9 +7,11 @@ const mongoUrl="mongodb+srv://pfa2nd:QHJBuTHwoPLOWqVz@cluster0.jg69u.mongodb.net
 
 require('./models/UserDetails')
 require('./models/SpecificCategory')
+require("./models/Product")
 
 app.use(require('./routes/authentication'))
 app.use(require('./routes/specificcat'))
+app.use(require("./routes/products"))
 
 app.get("/",(req,res)=>{
   res.send({status:"Started"})
