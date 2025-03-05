@@ -19,6 +19,11 @@ const BottomNavBar = () => {
     navigation.navigate('Categories');  // Navigate to the "Categories" screen
   };
 
+  const handleBarcode = () => {
+    console.log("Barcode Scanner button clicked");
+    navigation.navigate('Scanner');  // Navigate to the "Categories" screen
+  };
+
   const [routes] = React.useState([
     { key: 'home', title: 'Home', focusedIcon: 'home' },
     { key: 'recents', title: 'Recents', focusedIcon: 'history' },
@@ -32,9 +37,14 @@ const BottomNavBar = () => {
     recents: RecentsRoute,
     barcodeScan: BarcodeScanRoute,
     chart: ChartRoute,
+    
   });
 
   const handleTabChange = (newIndex) => {
+    if (newIndex===2)
+    {
+      handleBarcode();
+    }
     if (newIndex === 3) {  // "Compare" tab index
       handleCategories();  // Trigger handleCategories
     } else {
@@ -44,12 +54,14 @@ const BottomNavBar = () => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.greenRectangle} />
       <BottomNavigation
         navigationState={{ index, routes }}
         onIndexChange={handleTabChange}
         renderScene={renderScene}
-        style={styles.bottomNav}
+        barStyle={{ backgroundColor: "#1B623B" }} // Set navbar background color
+        activeColor="white" // Active icon color
+        inactiveColor="white" // Inactive icon color
+        shifting={false} // Keep background consistent
       />
     </View>
   );
@@ -66,9 +78,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#1B623B",
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
-  },
-  bottomNav: {
-    backgroundColor: "transparent",
   },
   routeText: {
     fontSize: 18,
