@@ -7,6 +7,7 @@ export default function HomeScreen({ navigation }) {
 
   const handleScanBarcode = () => {
     console.log("Scan Barcode button clicked");
+    navigation.navigate('Scanner')
   };
 
   const handleCompareProduct = () => {

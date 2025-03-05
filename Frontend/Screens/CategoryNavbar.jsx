@@ -8,8 +8,9 @@ const categories = [
   { key: 'bread', clusterName: "bread cereals", name: 'Bread', icon: 'bread-slice' },
   { key: 'cheese', clusterName: 'cheeses cream', name: 'Cheese', icon: 'cheese' },
   { key: 'coffee',   clusterName: ['beverages coffees', 'coffee coffees', 'beverages coffee'] , name: 'Coffee', icon: 'coffee-outline' },
-  { key: 'cookies', clusterName: 'biscuits cookies', name: 'Cookie', icon: 'cookie' },
-  { key: 'chips', clusterName: 'chips snacks', name: 'Chips', icon: 'baguette' },
+  { key: 'cookies', clusterName: ['biscuits snack', 'biscuits snack'], name: 'Cookie', icon: 'cookie' },
+  { key: 'popcorn', clusterName: 'snack popcorn', name: 'Popcorn', icon: 'popcorn' },
+  { key: 'fish', clusterName: ['fish meal', 'frozen fish', 'canned fish', 'smoked fish', 'fish breaded', 'fish fishes'], name: 'Fish', icon: 'fish' },
 ];
 
 const CategoryNavbar = ({ onCategorySelect }) => {
