@@ -24,7 +24,7 @@ export default function LoginScreen({ navigation }) {
     }
   
     try {
-      const response = await fetch("http://192.168.1.10:5001/login", {
+      const response = await fetch("http://192.168.29.51:5001/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -132,7 +132,7 @@ export default function LoginScreen({ navigation }) {
 
 const { width, height } = Dimensions.get("window");
 
-const styles = StyleSheet.create({
+export const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#FFFBEA",
