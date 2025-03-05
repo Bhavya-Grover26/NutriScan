@@ -12,6 +12,7 @@ import CompareProduct from './Screens/CompareProduct';
 import BottomNavBar from './Screens/BottomNavBar';
 import Categories from './Screens/Categories';
 import SpecificCategories from './Screens/SpecificCategories';
+import PreferenceAllergen from './Screens/PreferenceAllergen';
 
 const Stack = createNativeStackNavigator();
 
@@ -19,7 +20,12 @@ export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator>
-        <Stack.Screen
+      <Stack.Screen
+          name="Allerger"
+          component={PreferenceAllergen}
+          options={{ headerShown: false }}
+        />
+         <Stack.Screen
           name="Onboard1"
           component={Onboarding1}
           options={{ headerShown: false }}

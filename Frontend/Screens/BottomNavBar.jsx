@@ -44,12 +44,14 @@ const BottomNavBar = () => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.greenRectangle} />
       <BottomNavigation
         navigationState={{ index, routes }}
         onIndexChange={handleTabChange}
         renderScene={renderScene}
-        style={styles.bottomNav}
+        barStyle={{ backgroundColor: "#1B623B" }} // Set navbar background color
+        activeColor="white" // Active icon color
+        inactiveColor="white" // Inactive icon color
+        shifting={false} // Keep background consistent
       />
     </View>
   );
@@ -66,9 +68,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#1B623B",
     borderTopLeftRadius: 30,
     borderTopRightRadius: 30,
-  },
-  bottomNav: {
-    backgroundColor: "transparent",
   },
   routeText: {
     fontSize: 18,
