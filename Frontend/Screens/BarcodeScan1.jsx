@@ -1,9 +1,11 @@
-import React from "react";
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from "react-native";
+import React, { useState, useEffect } from "react";
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView , Image} from "react-native";
 import { IconButton } from 'react-native-paper';
+import BottomNavBar from "./BottomNavBar";
 
-const BarcodeScan1 = () => {
-  // Dummy Product Data
+
+const ProductDetailsScreen = () => {
+  const [activeTab, setActiveTab] = useState('Overview');
   const product = {
     name: "Chips saveur barbecue—Lay's 135 g",
     barcode: "3168930164661",
@@ -18,6 +20,13 @@ const BarcodeScan1 = () => {
     },
   };
 
+  const nutrients = [
+    { label: "Fat in high quantity (28%)", color: "#E74C3C" }, 
+    { label: "Saturated fat in moderate quantity (3.1%)", color: "#F4C542" }, 
+    { label: "Sugars in low quantity (2.8%)", color: "#8BC34A" }, 
+    { label: "Salt in moderate quantity (1.1%)", color: "#F4C542" },
+  ];
+
   return (
     <View style={styles.container}>
       {/* Header */}
@@ -30,29 +39,79 @@ const BarcodeScan1 = () => {
 
       {/* Success Message */}
       <View style={styles.successMessage}>
-        <Text style={styles.successText}>✅ Hurray, we scanned the product!</Text>
+        <Text style={styles.successText}> Hurray, we scanned the product!</Text>
       </View>
-
-      {/* Product Details */}
       <ScrollView style={styles.productContainer}>
-        <Text style={styles.productName}>{product.name}</Text>
-        <Text style={styles.ingredients}>{product.ingredients}</Text>
 
-        {/* Scores */}
-        <View style={styles.scoresContainer}>
-          {Object.entries(product.scores).map(([key, score]) => (
-            <View key={key} style={[styles.scoreBox, { backgroundColor: score.color }]}>
-              <Text style={styles.scoreLabel}>{score.label}</Text>
-              <Text style={styles.scoreDescription}>{score.description}</Text>
+      {/* Product Card */}
+      <View style={styles.productCard}>
+        {/* Product Image */}
+        <Image
+          source={{ uri: 'https://images.openfoodfacts.org/images/products/000/009/016/2602/front_en.90.400.jpg' }} // Replace with actual image
+          style={styles.productImage}
+        />
+        
+        {/* Product Info */}
+        <View style={styles.productInfo}>
+          <View style={styles.topRow}>
+ 
+            <Text style={styles.productName}>Kurkure - Green Chutney Style</Text>
+          </View>
+          <Text style={styles.brandName}>PepsiCo, Inc.</Text>
+
+          {/* Badges */}
+          <View style={styles.badgeContainer}>
+            <Text style={styles.badBadge}>Bad</Text>
+            <View style={styles.scoreBadge}>
+              <Text style={styles.scoreText}>10/100</Text>
             </View>
-          ))}
+          </View>
         </View>
+      </View>
+      <View style={styles.tabs}>
+        {['Overview', 'Ingredient', 'Nutrition'].map((tab) => (
+          <TouchableOpacity
+            key={tab}
+            onPress={() => setActiveTab(tab)}
+            style={[styles.tab, activeTab === tab && styles.activeTab]}
+          >
+            <Text style={[styles.tabText, activeTab === tab && styles.activeTabText]}>
+              {tab}
+            </Text>
+          </TouchableOpacity>
+        ))}
+      </View>
+      <View style={styles.infocontainer}>
+      {/* Nutrients Info */}
+      {nutrients.map((item, index) => (
+        <View key={index} style={styles.nutrientRow}>
+          <View style={[styles.dot, { backgroundColor: item.color }]} />
+          <Text style={styles.nutrientText}>{item.label}</Text>
+        </View>
+      ))}
 
-        {/* Save Button */}
-        <TouchableOpacity style={styles.saveButton}>
-          <Text style={styles.saveButtonText}>Save product</Text>
-        </TouchableOpacity>
+      {/* Allergen Warning */}
+      <View style={styles.allergenContainer}>
+        <IconButton icon="alert-outline" size={28} color="white" />
+        <Text style={styles.allergenText}> Allergens: Soybeans</Text>
+      </View>
+    </View>
+    <View style={styles.suggestedSection}>
+        <Text style={styles.suggestedTitle}>Compare Products</Text>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.suggestedList}>
+          <View style={styles.suggestedItem}>
+            <Image source={{ uri: 'https://images.openfoodfacts.org/images/products/890/176/409/2206/front_en.3.400.jpg' }} style={styles.suggestedImage} />
+            <Text style={styles.suggestedText}>Dnv appalam papad</Text>
+          </View>
+          <View style={styles.suggestedItem}>
+            <Image source={{ uri: 'https://images.openfoodfacts.org/images/products/950/110/153/0003/front_en.26.400.jpg' }} style={styles.suggestedImage} />
+            <Text style={styles.suggestedText}>Another Product</Text>
+          </View>
+        </ScrollView>
+      </View>
+        
       </ScrollView>
+      <BottomNavBar/>
     </View>
   );
 };
@@ -68,23 +127,160 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  headerText: { color: "white", fontSize: 18, fontWeight: "bold" },
+  headerText: 
+  { color: "white", fontSize: 18, fontWeight: "bold" 
+  },
   closeButton: { position: "absolute", left: 20, top: "50%", transform: [{ translateY: -14 }] },
 
   successMessage: { backgroundColor: "#DFF2BF", padding: 10, borderRadius: 10, margin: 15 },
   successText: { color: "#4F8A10", fontSize: 16, fontWeight: "bold" },
 
-  productContainer: { flex: 1, padding: 20, backgroundColor: "white", borderRadius: 10, margin: 10 },
-  productName: { fontSize: 18, fontWeight: "bold", marginBottom: 8 },
-  ingredients: { fontSize: 14, color: "#666", marginBottom: 15 },
-
-  scoresContainer: { flexDirection: "row", justifyContent: "space-between", marginBottom: 15 },
-  scoreBox: { width: "22%", padding: 10, borderRadius: 8, alignItems: "center" },
-  scoreLabel: { fontSize: 18, fontWeight: "bold", color: "white" },
-  scoreDescription: { fontSize: 12, color: "white", textAlign: "center" },
-
+  productCard: {
+    backgroundColor: "#fff",
+    padding: 16,
+    flexDirection: "row",
+    alignItems: "center",
+    borderRadius: 12,
+    elevation: 2,
+    marginHorizontal: 16,
+    marginBottom: 16,
+  },
+  productImage: {
+    width: 100,
+    height: 120,
+    borderRadius: 8,
+  },
+  productInfo: {
+    flex: 1,
+    marginLeft: 16,
+  },
+  topRow: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  vegIcon: {
+    marginRight: 6,
+  },
+  productName: {
+    fontSize: 16,
+    fontWeight: "bold",
+    flexShrink: 1,
+  },
+  brandName: {
+    fontSize: 14,
+    color: "#666",
+    marginTop: 4,
+  },
+  badgeContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: 8,
+  },
+  badBadge: {
+    backgroundColor: "#FF4C4C",
+    color: "#fff",
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 12,
+    fontSize: 14,
+    fontWeight: "bold",
+  },
+  scoreBadge: {
+    backgroundColor: "#FF4C4C",
+    borderRadius: 12,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    marginLeft: 8,
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  scoreText: {
+    color: "#fff",
+    fontWeight: "bold",
+    marginLeft: 4,
+  },
+  tabs: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    backgroundColor: '#f5f5f5',
+    borderRadius: 8,
+    marginHorizontal: 16,
+    paddingVertical: 8,
+  },
+  tab: {
+    padding: 10,
+  },
+  activeTab: {
+    borderBottomWidth: 2,
+    borderBottomColor: '#FF8C00',
+  },
+  activeTabText: {
+    fontWeight: 'bold',
+  },
+  infocontainer: {
+    backgroundColor: "#FFF",
+    padding: 16,
+    borderRadius: 10,
+    marginTop: 10,
+    marginHorizontal: 16,
+    marginBottom: 16,
+  },
+  nutrientRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 6,
+  },
+  dot: {
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+    marginRight: 10,
+  },
+  nutrientText: {
+    fontSize: 14,
+    color: "#555",
+  },
+  allergenContainer: {
+    marginTop: 1,
+    backgroundColor: "#E74C3C",
+    borderRadius: 6,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  allergenText: {
+    color: "white",
+    fontSize: 14,
+    alignItems: "center",
+    fontWeight: "bold",
+  },
+  suggestedSection: {
+    marginBottom: 200,
+    padding: 14,
+  },
+  suggestedTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  suggestedList: {
+    flexDirection: 'row',
+    marginTop: 8,
+  },
+  suggestedItem: {
+    marginRight: 12,
+    alignItems: 'center',
+  },
+  suggestedImage: {
+    width: 80,
+    height: 80,
+    borderRadius: 8,
+  },
+  suggestedText: {
+    fontSize: 12,
+    textAlign: 'center',
+  },
   saveButton: { backgroundColor: "#27AE60", padding: 15, borderRadius: 10, alignItems: "center", marginTop: 10 },
   saveButtonText: { color: "white", fontSize: 16, fontWeight: "bold" },
 });
 
-export default BarcodeScan1;
+export default ProductDetailsScreen;
