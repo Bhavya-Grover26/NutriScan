@@ -19,6 +19,11 @@ const BottomNavBar = () => {
     navigation.navigate('Categories');  // Navigate to the "Categories" screen
   };
 
+  const handleBarcode = () => {
+    console.log("Barcode Scanner button clicked");
+    navigation.navigate('Scanner');  // Navigate to the "Categories" screen
+  };
+
   const [routes] = React.useState([
     { key: 'home', title: 'Home', focusedIcon: 'home' },
     { key: 'recents', title: 'Recents', focusedIcon: 'history' },
@@ -32,9 +37,14 @@ const BottomNavBar = () => {
     recents: RecentsRoute,
     barcodeScan: BarcodeScanRoute,
     chart: ChartRoute,
+    
   });
 
   const handleTabChange = (newIndex) => {
+    if (newIndex===2)
+    {
+      handleBarcode();
+    }
     if (newIndex === 3) {  // "Compare" tab index
       handleCategories();  // Trigger handleCategories
     } else {

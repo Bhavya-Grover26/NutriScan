@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, TextInput, Image, ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
 import { IconButton } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
+import BottomNavBar from "./BottomNavBar";
 
 
 const Categories = () => {
@@ -86,6 +87,7 @@ const Categories = () => {
           </View>
         </TouchableOpacity>
       </ScrollView>
+      <BottomNavBar/>
     </View>
   );
 };

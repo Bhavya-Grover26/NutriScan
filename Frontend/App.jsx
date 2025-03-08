@@ -13,6 +13,8 @@ import BottomNavBar from './Screens/BottomNavBar';
 import Categories from './Screens/Categories';
 import SpecificCategories from './Screens/SpecificCategories';
 import PreferenceAllergen from './Screens/PreferenceAllergen';
+import Scanner from './Screens/Camera';
+import BarcodeScan1 from './Screens/BarcodeScan1';
 
 const Stack = createNativeStackNavigator();
 
@@ -78,6 +80,16 @@ export default function App() {
         <Stack.Screen
           name="SpecificCategories"
           component={SpecificCategories}
+          options={{ headerShown: false }}
+        />  
+        <Stack.Screen
+          name="Scanner"
+          component={Scanner}
+          options={{ headerShown: false }}
+        />  
+        <Stack.Screen
+          name="BarcodeScan1"
+          component={BarcodeScan1}
           options={{ headerShown: false }}
         />  
       </Stack.Navigator>
