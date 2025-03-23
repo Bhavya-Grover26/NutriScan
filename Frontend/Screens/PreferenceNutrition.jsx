@@ -5,17 +5,17 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import BottomNavBar from './BottomNavBar';
 import { useNavigation } from '@react-navigation/native';
 
-export default function PreferenceAllergen() {
-  const [selectedAllergens, setSelectedAllergens] = useState([]);
-  const navigation = useNavigation(); 
+export default function PreferenceNutrition() {
+  const [selectedNutritions, setSelectedNutritions] = useState([]);
+  const navigation = useNavigation();
 
-  const Allergens = ['Peanuts', 'Eggs', 'Fish', 'Tree Nuts', 'Wheat', 'Shellfish', 'Dairy', 'Soy', 'Sesame'];
+  const Nutritions = ['High Protein', 'Low Carb', 'No Added Sugars', 'High Fiber', 'Low Cholesterol', 'Fortified with Vitamins', 'Low Fat', 'Low Sodium', 'Whole Grains Only'];
 
-  const toggleAllergen = (Allergen) => {
-    if (selectedAllergens.includes(Allergen)) {
-      setSelectedAllergens(selectedAllergens.filter(item => item !== Allergen));
+  const toggleNutrition = (Nutrition) => {
+    if (selectedNutritions.includes(Nutrition)) {
+      setSelectedNutritions(selectedNutritions.filter(item => item !== Nutrition));
     } else {
-      setSelectedAllergens([...selectedAllergens, Allergen]);
+      setSelectedNutritions([...selectedNutritions, Nutrition]);
     }
   };
 
@@ -48,32 +48,31 @@ export default function PreferenceAllergen() {
         </TouchableOpacity>
       ))}
     </View>
-    
 
         <View style={styles.pageContainer}>
           <Text style={styles.description}>
-          Choose the ingredients you're allergic to, and we’ll flag any products that contain them.
+          Indicate your nutritional goals, and we’ll recommend products that align with your health and dietary preferences.
           </Text>
 
-          {/* Allergen Selection */}
-          <View style={styles.AllergenContainer}>
-            {Allergens.map((item, index) => (
+          {/* Nutrition Selection */}
+          <View style={styles.NutritionContainer}>
+            {Nutritions.map((item, index) => (
               <TouchableOpacity
                 key={index}
-                style={[styles.Allergen, selectedAllergens.includes(item) && styles.AllergenSelected]}
-                onPress={() => toggleAllergen(item)}
+                style={[styles.Nutrition, selectedNutritions.includes(item) && styles.NutritionSelected]}
+                onPress={() => toggleNutrition(item)}
               >
-                <Text style={[styles.AllergenText, selectedAllergens.includes(item) && styles.AllergenTextSelected]}>
+                <Text style={[styles.NutritionText, selectedNutritions.includes(item) && styles.NutritionTextSelected]}>
                   {item}
                 </Text>
               </TouchableOpacity>
             ))}
           </View>
 
-          {/* Severity Level */}
-          <Text style={styles.severityLabel}>Severity Level</Text>
+          {/* Importance */}
+          <Text style={styles.severityLabel}>Importance</Text>
           <View style={styles.sliderContainer}>
-            <Text style={styles.sliderText}>Mild</Text>
+            <Text style={styles.sliderText}>Nice to Have</Text>
             <Slider
               style={styles.slider}
               minimumValue={0}
@@ -82,7 +81,7 @@ export default function PreferenceAllergen() {
               minimumTrackTintColor="#1B623B"
               thumbTintColor="#1B623B"
             />
-            <Text style={styles.sliderText}>Severe</Text>
+            <Text style={styles.sliderText}>Essential</Text>
           </View>
 
           {/* Apply Button */}
@@ -117,12 +116,12 @@ const styles = StyleSheet.create({
   pageContainer: { backgroundColor: 'white', padding: 45, borderTopLeftRadius: 20, borderTopRightRadius: 20 },
   description: { textAlign: 'center', fontSize: 14, marginBottom: 15, color: '#333' },
 
-  // Allergen Selection
-  AllergenContainer: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center' },
-  Allergen: { backgroundColor: '#ADDB9D', paddingVertical: 8, paddingHorizontal: 15, borderRadius: 20, margin: 5 },
-  AllergenSelected: { backgroundColor: '#1B623B' },
-  AllergenText: { fontSize: 14, color: '#1B623B' },
-  AllergenTextSelected: { color: 'white' },
+  // Nutrition Selection
+  NutritionContainer: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center' },
+  Nutrition: { backgroundColor: '#ADDB9D', paddingVertical: 8, paddingHorizontal: 15, borderRadius: 20, margin: 5 },
+  NutritionSelected: { backgroundColor: '#1B623B' },
+  NutritionText: { fontSize: 14, color: '#1B623B' },
+  NutritionTextSelected: { color: 'white' },
 
   // Severity Section
   severityLabel: { fontSize: 16, fontWeight: 'bold', marginTop: 40, marginBottom: 8 }, 

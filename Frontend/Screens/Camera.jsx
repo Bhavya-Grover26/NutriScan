@@ -56,7 +56,7 @@ const Scanner = () => {
     const fetchProductDetails = async (barcode) => {
         setLoading(true);
         try {
-            const response = await axios.get(`http://127.0.0.1:5000/scan?barcode=${barcode}`);
+            const response = await axios.get(`http://192.168.0.112:5000/scan?barcode=${barcode}`);
             Alert.alert("Product Details", JSON.stringify(response.data, null, 2));
         } catch (error) {
             Alert.alert("Error", "Failed to fetch product details");
@@ -72,7 +72,7 @@ const Scanner = () => {
 
       setLoading(true);
       try {
-          const response = await axios.get(`http://192.168.1.10:5000/check_barcode?barcode=${barcode}`);
+          const response = await axios.get(`http://192.168.0.112:5000/check_barcode?barcode=${barcode}`);
           console.log("API Response:", response.data); // Debugging
 
           if (response.data.exists === true) {

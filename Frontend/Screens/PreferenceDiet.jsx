@@ -5,17 +5,17 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import BottomNavBar from './BottomNavBar';
 import { useNavigation } from '@react-navigation/native';
 
-export default function PreferenceAllergen() {
-  const [selectedAllergens, setSelectedAllergens] = useState([]);
+export default function PreferenceDiet() {
+  const [selectedDiets, setSelectedDiets] = useState([]);
   const navigation = useNavigation(); 
 
-  const Allergens = ['Peanuts', 'Eggs', 'Fish', 'Tree Nuts', 'Wheat', 'Shellfish', 'Dairy', 'Soy', 'Sesame'];
+  const Diets = ['Vegan', 'Dairy-Free', 'Low Sugar', 'Vegetarian', 'Keto', 'Low Sodium', 'Gluten-Free', 'Paleo', 'Organic'];
 
-  const toggleAllergen = (Allergen) => {
-    if (selectedAllergens.includes(Allergen)) {
-      setSelectedAllergens(selectedAllergens.filter(item => item !== Allergen));
+  const toggleDiet = (Diet) => {
+    if (selectedDiets.includes(Diet)) {
+      setSelectedDiets(selectedDiets.filter(item => item !== Diet));
     } else {
-      setSelectedAllergens([...selectedAllergens, Allergen]);
+      setSelectedDiets([...selectedDiets, Diet]);
     }
   };
 
@@ -48,32 +48,32 @@ export default function PreferenceAllergen() {
         </TouchableOpacity>
       ))}
     </View>
-    
+
 
         <View style={styles.pageContainer}>
           <Text style={styles.description}>
-          Choose the ingredients you're allergic to, and we’ll flag any products that contain them.
+          Let us know your dietary preferences, and we’ll guide you to products that meet your needs.
           </Text>
 
-          {/* Allergen Selection */}
-          <View style={styles.AllergenContainer}>
-            {Allergens.map((item, index) => (
+          {/* Diet Selection */}
+          <View style={styles.DietContainer}>
+            {Diets.map((item, index) => (
               <TouchableOpacity
                 key={index}
-                style={[styles.Allergen, selectedAllergens.includes(item) && styles.AllergenSelected]}
-                onPress={() => toggleAllergen(item)}
+                style={[styles.Diet, selectedDiets.includes(item) && styles.DietSelected]}
+                onPress={() => toggleDiet(item)}
               >
-                <Text style={[styles.AllergenText, selectedAllergens.includes(item) && styles.AllergenTextSelected]}>
+                <Text style={[styles.DietText, selectedDiets.includes(item) && styles.DietTextSelected]}>
                   {item}
                 </Text>
               </TouchableOpacity>
             ))}
           </View>
 
-          {/* Severity Level */}
-          <Text style={styles.severityLabel}>Severity Level</Text>
+          {/* Strictness Level */}
+          <Text style={styles.severityLabel}>Strictness Level</Text>
           <View style={styles.sliderContainer}>
-            <Text style={styles.sliderText}>Mild</Text>
+            <Text style={styles.sliderText}>Flexible</Text>
             <Slider
               style={styles.slider}
               minimumValue={0}
@@ -82,7 +82,7 @@ export default function PreferenceAllergen() {
               minimumTrackTintColor="#1B623B"
               thumbTintColor="#1B623B"
             />
-            <Text style={styles.sliderText}>Severe</Text>
+            <Text style={styles.sliderText}>Strict</Text>
           </View>
 
           {/* Apply Button */}
@@ -117,12 +117,12 @@ const styles = StyleSheet.create({
   pageContainer: { backgroundColor: 'white', padding: 45, borderTopLeftRadius: 20, borderTopRightRadius: 20 },
   description: { textAlign: 'center', fontSize: 14, marginBottom: 15, color: '#333' },
 
-  // Allergen Selection
-  AllergenContainer: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center' },
-  Allergen: { backgroundColor: '#ADDB9D', paddingVertical: 8, paddingHorizontal: 15, borderRadius: 20, margin: 5 },
-  AllergenSelected: { backgroundColor: '#1B623B' },
-  AllergenText: { fontSize: 14, color: '#1B623B' },
-  AllergenTextSelected: { color: 'white' },
+  // Diet Selection
+  DietContainer: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center' },
+  Diet: { backgroundColor: '#ADDB9D', paddingVertical: 8, paddingHorizontal: 15, borderRadius: 20, margin: 5 },
+  DietSelected: { backgroundColor: '#1B623B' },
+  DietText: { fontSize: 14, color: '#1B623B' },
+  DietTextSelected: { color: 'white' },
 
   // Severity Section
   severityLabel: { fontSize: 16, fontWeight: 'bold', marginTop: 40, marginBottom: 8 }, 
