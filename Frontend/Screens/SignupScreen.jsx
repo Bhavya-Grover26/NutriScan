@@ -47,7 +47,7 @@ export default function SignupScreen({ navigation }) {
       phone,
     };
 
-    fetch("http://192.168.0.112:5001/register", {
+    fetch("http://192.168.1.10:5001/register", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

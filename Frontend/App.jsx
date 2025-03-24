@@ -27,7 +27,7 @@ export default function App() {
     <NavigationContainer>
       <Stack.Navigator>
         
-        <Stack.Screen
+      <Stack.Screen
           name="PreferenceAllergen"
           component={PreferenceAllergen}
           options={{ headerShown: false }}
@@ -83,6 +83,7 @@ export default function App() {
           component={SignupScreen}
           options={{ headerShown: false }}
         />
+         
         <Stack.Screen
           name="Home"
           component={HomeScreen}

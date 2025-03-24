@@ -72,7 +72,7 @@ const Scanner = () => {
 
       setLoading(true);
       try {
-          const response = await axios.get(`http://192.168.0.112:5000/check_barcode?barcode=${barcode}`);
+          const response = await axios.get(`http://192.168.1.10:5000/check_barcode?barcode=${barcode}`);
           console.log("API Response:", response.data); // Debugging
 
           if (response.data.exists === true) {

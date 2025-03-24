@@ -21,7 +21,7 @@ const SpecificCategories = () => {
   .split(" ")                  // Split category into individual words
   .map((part) => part.trim())  // Trim each word
   .join("-");                  // Join with hyphens to form "bread-cereals"
-      const response = await fetch(`http://192.168.0.112:5001/products/${formattedCategory}`);
+      const response = await fetch(`http://192.168.1.10:5001/products/${formattedCategory}`);
       console.log("Fetching products from URL:", response);
 
       const data = await response.json();
