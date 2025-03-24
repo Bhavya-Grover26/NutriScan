@@ -3,11 +3,14 @@ import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Image } from "rea
 import { IconButton } from "react-native-paper";
 import BottomNavBar from "./BottomNavBar";
 import { useRoute } from "@react-navigation/native";
+import { useNavigation } from "@react-navigation/native";
+
 
 const ProductDetailsScreen = () => {
   const [activeTab, setActiveTab] = useState("Overview");
   const [product, setProduct] = useState(null);
   const [suggestedProducts, setSuggestedProducts] = useState([]);
+  const navigation = useNavigation();
   const route = useRoute();
   const { barcode } = route.params;
 
@@ -154,22 +157,27 @@ const ProductDetailsScreen = () => {
         )}
 
         {/* Suggested Products */}
-{/* Suggested Products */}
-      <View style={styles.suggestedSection}>
-        <Text style={styles.suggestedTitle}>Compare Products</Text>
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.suggestedList}
-        >
-          {suggestedProducts.map((item, index) => (
-            <View key={index} style={styles.suggestedItem}>
-              <Image source={{ uri: item.image_url }} style={styles.suggestedImage} />
-              <Text style={styles.suggestedText}>{item.product_name}</Text>
-            </View>
-          ))}
-        </ScrollView>
-      </View>
+        <View style={styles.suggestedSection}>
+          <Text style={styles.suggestedTitle}>Compare Products</Text>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.suggestedList}
+          >
+            {suggestedProducts.map((item, index) => (
+              <TouchableOpacity
+                key={index}
+                style={styles.suggestedItem}
+                onPress={() => navigation.navigate("Compare", { originalProduct: product, comparedProduct: item })}
+              >
+                <Image source={{ uri: item.image_url }} style={styles.suggestedImage} />
+                <Text style={styles.suggestedText}>{item.product_name}</Text>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+        </View>
+
+
 
       </ScrollView>
       <BottomNavBar />
