@@ -1,13 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, TextInput, ScrollView, Image, TouchableOpacity, StyleSheet } from 'react-native';
 import { IconButton } from 'react-native-paper';
+import { useRoute } from '@react-navigation/native';
 import CategoryNavbar from './CategoryNavbar';
 import BottomNavBar from "./BottomNavBar";
 
 
 const SpecificCategories = () => {
-  const [selectedCategory, setSelectedCategory] = useState("bread");
+  const route = useRoute();
+const initialCategory = route.params?.category || "bread"; // Default to 'bread' if no category is provided
+const [selectedCategory, setSelectedCategory] = useState(initialCategory);
+
   const [categoryItems, setCategoryItems] = useState([]);
+  
 
   useEffect(() => {
     if (selectedCategory) {

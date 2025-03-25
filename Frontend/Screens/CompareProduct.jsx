@@ -7,7 +7,16 @@ const CompareProduct = () => {
   const route = useRoute();
   const { originalProduct, comparedProduct } = route.params;
 
+  // Function to determine text color based on nutrient level
+  const getTextColor = (level) => {
+    if (level.toLowerCase().includes("high")) return "red";
+    if (level.toLowerCase().includes("moderate")) return "orange";
+    if (level.toLowerCase().includes("low")) return "green";
+    return "black";
+  };
+
   return (
+    <>
     <View style={styles.container}>
       <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps="handled">
         <View style={styles.header}>
@@ -20,7 +29,7 @@ const CompareProduct = () => {
           <View style={styles.productCard}>
             <Image source={{ uri: originalProduct.image_url }} style={styles.productImage} />
             <Text style={styles.productName}>{originalProduct.product_name}</Text>
-            <Text style={styles.productBrand}>Brand: {originalProduct.brand}</Text>
+           
           </View>
 
           <Text style={styles.vsText}>Vs</Text>
@@ -29,14 +38,14 @@ const CompareProduct = () => {
           <View style={styles.productCard}>
             <Image source={{ uri: comparedProduct.image_url }} style={styles.productImage} />
             <Text style={styles.productName}>{comparedProduct.product_name}</Text>
-            <Text style={styles.productBrand}>Brand: {comparedProduct.brand}</Text>
+            
           </View>
         </View>
 
         {/* Score Details Section */}
         <View style={styles.scoreComparisonContainer}>
           <View style={styles.scoreCard}>
-            <Text style={styles.scoreLabel}>Rank: {originalProduct.Rank}</Text>
+            <Text style={styles.scoreLabel}>Rank: {originalProduct.rank}</Text>
             <Text style={styles.scoreLabel}>Nutrition Score: {originalProduct.nutriscore_tags}</Text>
             <Text style={styles.scoreLabel}>Additives: {originalProduct.additives_tags?.length || 'N/A'}</Text>
           </View>
@@ -48,60 +57,48 @@ const CompareProduct = () => {
           </View>
         </View>
 
-        {/* Nutrient Levels Comparison Section */}
+        {/* Nutrient Levels Comparison */}
         <View style={styles.nutrientLevelsContainer}>
           <Text style={styles.sectionTitle}>Nutrient Levels</Text>
           <View style={styles.nutrientComparisonContainer}>
-            {console.log("Original Product Nutrient Levels:", originalProduct.nutrient_levels_tags)}
-            {console.log("Compared Product Nutrient Levels:", comparedProduct.nutrient_levels_tags)}
-
             {(Array.isArray(originalProduct.nutrient_levels_tags) && Array.isArray(comparedProduct.nutrient_levels_tags)) &&
-            originalProduct.nutrient_levels_tags.length > 0 && comparedProduct.nutrient_levels_tags.length > 0 ? (
-              comparedProduct.nutrient_levels_tags.map((nutrientString, index) => {
-                const formatNutrient = (nutrientString) => {
-                  if (!nutrientString) return { nutrientName: 'N/A', formattedLevel: 'N/A' };
+              originalProduct.nutrient_levels_tags.length > 0 && comparedProduct.nutrient_levels_tags.length > 0 ? (
+                comparedProduct.nutrient_levels_tags.map((nutrientString, index) => {
+                  const formatNutrient = (nutrientString) => {
+                    if (!nutrientString) return { nutrientName: 'N/A', formattedLevel: 'N/A' };
+                    const cleanString = nutrientString.replace('en:', '');
+                    const words = cleanString.split('-');
+                    const level = words.slice(-2).join(' ');
+                    const nutrientName = words.slice(0, -3).join(' ') || words[0];
+                    const formattedLevel = level.replace('in-', '').replace('-quantity', '').replace(/\b\w/g, c => c.toUpperCase());
+                    return { nutrientName, formattedLevel };
+                  };
+                  const originalNutrient = originalProduct.nutrient_levels_tags[index] ? formatNutrient(originalProduct.nutrient_levels_tags[index]) : { nutrientName: "N/A", formattedLevel: "N/A" };
+                  const comparedNutrient = formatNutrient(nutrientString);
 
-                  // Remove "en:" prefix
-                  const cleanString = nutrientString.replace('en:', '');
-
-                  // Extract words
-                  const words = cleanString.split('-');
-
-                  // Extract level (last two words)
-                  const level = words.slice(-2).join(' '); // e.g., "low quantity"
-
-                  // Extract the nutrient name (everything before "in")
-                  const nutrientName = words.slice(0, -3).join(' ') || words[0];
-
-                  // Format level (capitalize first letter)
-                  const formattedLevel = level.replace('in-', '').replace('-quantity', '').replace(/\b\w/g, c => c.toUpperCase());
-
-                  return { nutrientName, formattedLevel };
-                };
-
-                const originalNutrient = originalProduct.nutrient_levels_tags[index] ? formatNutrient(originalProduct.nutrient_levels_tags[index]) : { nutrientName: "N/A", formattedLevel: "N/A" };
-                const comparedNutrient = formatNutrient(nutrientString);
-
-                return (
-                  <View key={index} style={styles.nutrientComparisonCard}>
-                    <Text style={styles.leftProductDetail}>{originalNutrient.formattedLevel}</Text>
-                    <Text style={styles.nutrientName}>{comparedNutrient.nutrientName}</Text>
-                    <Text style={styles.rightProductDetail}>{comparedNutrient.formattedLevel}</Text>
-                  </View>
-                );
-              })
-            ) : (
-              <Text style={{ textAlign: 'center', marginTop: 10, color: 'red' }}>
-                No nutrient level data available.
-              </Text>
-            )}
+                  return (
+                    <View key={index} style={styles.nutrientComparisonCard}>
+                      <Text style={[styles.leftProductDetail, { color: getTextColor(originalNutrient.formattedLevel) }]}>
+                        {originalNutrient.formattedLevel}
+                      </Text>
+                      <Text style={styles.nutrientName}>{comparedNutrient.nutrientName}</Text>
+                      <Text style={[styles.rightProductDetail, { color: getTextColor(comparedNutrient.formattedLevel) }]}>
+                        {comparedNutrient.formattedLevel}
+                      </Text>
+                    </View>
+                  );
+                })
+              ) : (
+                <Text style={{ textAlign: 'center', marginTop: 10, color: 'red' }}>
+                  No nutrient level data available.
+                </Text>
+              )}
           </View>
         </View>
       </ScrollView>
-
-      {/* Bottom Navigation Bar */}
-      <BottomNavBar />
     </View>
+    <BottomNavBar />
+  </>
   );
 };
 

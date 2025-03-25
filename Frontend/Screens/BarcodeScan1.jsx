@@ -5,7 +5,6 @@ import BottomNavBar from "./BottomNavBar";
 import { useRoute } from "@react-navigation/native";
 import { useNavigation } from "@react-navigation/native";
 
-
 const ProductDetailsScreen = () => {
   const [activeTab, setActiveTab] = useState("Overview");
   const [product, setProduct] = useState(null);
@@ -22,7 +21,37 @@ const ProductDetailsScreen = () => {
         const response = await fetch(`http://192.168.1.10:5001/product/${barcode}`);
         const data = await response.json();
         console.log("Product details fetched:", data);
-        setProduct(data);
+  
+        // Compute classification from ingredients
+        let isNonVeg = false;
+        let isVegetarian = true;
+        let isVegan = true;
+        let isJain = true;
+  
+        if (data.classification) {
+          Object.values(data.classification).forEach((ingredient) => {
+            if (ingredient.non_veg === "Yes") {
+              isNonVeg = true;
+              isVegetarian = false;
+            }
+            if (ingredient.vegan === "No") {
+              isVegan = false;
+            }
+            if (ingredient.not_jain === "Yes") {
+              isJain = false;
+            }
+          });
+        }
+  
+        setProduct({
+          ...data,
+          overallClassification: {
+            vegan: isVegan,
+            vegetarian: isVegetarian,
+            non_veg: isNonVeg,
+            jain: isJain,
+          },
+        });
       } catch (error) {
         console.error("Error fetching product details:", error);
       }
@@ -89,7 +118,10 @@ const ProductDetailsScreen = () => {
       <View style={styles.successMessage}>
         <Text style={styles.successText}>Hurray, we scanned the product!</Text>
       </View>
-      <ScrollView style={styles.productContainer}>
+      <ScrollView 
+        style={styles.scrollContainer}
+        contentContainerStyle={{ paddingBottom: 70 }}  // Prevents BottomNavBar overlap
+      >
 
         {/* Product Card */}
         <View style={styles.productCard}>
@@ -125,6 +157,58 @@ const ProductDetailsScreen = () => {
             </TouchableOpacity>
           ))}
         </View>
+
+        {activeTab === "Overview" && (
+  <View style={styles.overviewContainer}>
+    <Text style={styles.sectionTitle}>Classification:</Text>
+    <View style={styles.classificationTable}>
+      <View style={styles.tableRow}>
+        <View style={styles.tableCell}>
+          <Text>Vegan:</Text>
+          <IconButton 
+            icon={product.overallClassification.vegan ? "check" : "alpha-x"} 
+            size={18} 
+            iconColor={product.overallClassification.vegan ? "green" : "red"} 
+          />
+        </View>
+        <View style={styles.tableCell}>
+          <Text>Vegetarian:</Text>
+          <IconButton 
+            icon={product.overallClassification.vegetarian ? "check" : "alpha-x"} 
+            size={18} 
+            iconColor={product.overallClassification.vegetarian ? "green" : "red"} 
+          />
+        </View>
+      </View>
+      <View style={styles.tableRow}>
+        <View style={styles.tableCell}>
+          <Text>Non-Veg:</Text>
+          <IconButton 
+            icon={product.overallClassification.non_veg ? "check" : "alpha-x"} 
+            size={18} 
+            iconColor={product.overallClassification.non_veg ? "green" : "red"} 
+          />
+        </View>
+        <View style={styles.tableCell}>
+          <Text>Jain:</Text>
+          <IconButton 
+            icon={product.overallClassification.jain ? "check" : "alpha-x"} 
+            size={18} 
+            iconColor={product.overallClassification.jain ? "green" : "red"} 
+          />
+        </View>
+      </View>
+    </View>
+    
+    <View style={styles.infoRow}>
+      <Text style={styles.infoText}>NOVA Group: {product.nova_group}</Text>
+      <Text style={styles.infoText}>NutriScore: {product.nutriscore_tags?.join(", ")}</Text>
+    </View>
+  </View>
+)}
+
+
+       
 
         {/* Ingredients Info */}
         {activeTab === "Ingredient" && (
@@ -267,7 +351,53 @@ const styles = StyleSheet.create({
   activeTab: { borderBottomWidth: 2, borderBottomColor: "#1B623B" },
   activeTabText: { fontWeight: "bold" },
   infocontainer: { padding: 16, backgroundColor: "#FFF", margin: 16, borderRadius: 10 },
-  sectionTitle: { fontSize: 16, fontWeight: "bold", marginBottom: 4 },
+  overviewContainer: { 
+    padding: 10, 
+    backgroundColor: "#FFF", 
+    marginHorizontal: 12, 
+    borderRadius: 10, 
+    elevation: 1,
+  },
+  
+  classificationTable: { 
+    backgroundColor: "#F9F9F9",
+    borderRadius: 8,
+    padding: 2, 
+  },
+  
+  tableRow: { 
+    flexDirection: "row", 
+    justifyContent: "space-between", 
+    marginVertical: 2 
+  },
+  
+  tableCell: { 
+    flexDirection: "row", 
+    alignItems: "center", 
+    justifyContent: "space-between",
+    flex: 1,
+    padding: 6,
+  },
+  
+  infoRow: { 
+    flexDirection: "row", 
+    justifyContent: "space-between", 
+    marginTop: 8 
+  },
+  
+  infoText: { 
+    fontSize: 14, 
+    color: "#333" 
+  },
+  
+  sectionTitle: { 
+    fontSize: 18, 
+    fontWeight: "bold", 
+    marginBottom: 8, 
+    color: "#333", 
+    textAlign: "left" 
+  },
+  
   suggestedSection: {
     margin: 16,
   },

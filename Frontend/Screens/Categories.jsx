@@ -23,16 +23,16 @@ const Categories = () => {
 
       {/* Scrollable Category List */}
       <ScrollView style={styles.categoryList}>
-        {/* Category 1: Chips */}
+        {/* Category 1: Bread */}
         <TouchableOpacity style={styles.categoryCard}
-          onPress={() => navigation.navigate('SpecificCategories')}>
+          onPress={() => navigation.navigate('SpecificCategories', { category: 'bread' })}>
           <Image
-            source={{ uri: 'https://c8.alamy.com/comp/KA04E4/crisps-on-display-in-a-supermarket-KA04E4.jpg' }}
+            source={{ uri: 'https://www.supermarketperimeter.com/ext/resources/2023/08/21/AdobeStock_198186611.jpg?height=667&t=1692630520&width=1080' }}
             style={styles.categoryImage}
           />
           <View style={styles.categoryTextContainer}>
             <View style={styles.categoryHeader}>
-              <Text style={styles.categoryTitle}>Chips</Text>
+              <Text style={styles.categoryTitle}>Bread</Text>
               <IconButton
                 icon="chevron-right"
                 size={24}
@@ -40,20 +40,20 @@ const Categories = () => {
               />
             </View>
             <Text style={styles.categoryDescription}>
-              Compare the nutritional profiles of various chip brands to find the healthiest option for your snacking needs!
+               Compare different bread options based on fiber, whole grains, and added sugars to find the best fit for your diet.
             </Text>
           </View>
         </TouchableOpacity>
 
-        {/* Category 2: Ketchups */}
+        {/* Category 2: Cheese */}
         <TouchableOpacity style={styles.categoryCard}>
           <Image
-            source={{ uri: 'https://c8.alamy.com/comp/E2JY6R/shelf-with-food-in-a-supermarket-ketchup-and-other-sauces-E2JY6R.jpg' }}
+            source={{ uri: 'https://gilbertsfresh.com.au/wp-content/uploads/2020/10/Cheese-Dairy-PAGE-Gilberts_180920_055-768x512.jpg' }}
             style={styles.categoryImage}
           />
           <View style={styles.categoryTextContainer}>
             <View style={styles.categoryHeader}>
-              <Text style={styles.categoryTitle}>Ketchups</Text>
+              <Text style={styles.categoryTitle}>Cheese</Text>
               <IconButton
                 icon="chevron-right"
                 size={24}
@@ -61,11 +61,10 @@ const Categories = () => {
               />
             </View>
             <Text style={styles.categoryDescription}>
-              Explore and compare the nutritional content of different ketchup brands to choose the best option for your diet!
+            Analyze various cheese types based on fat content, protein levels, and additives to make an informed choice.
             </Text>
           </View>
         </TouchableOpacity>
-
         {/* Category 3: Carbonated Drinks */}
         <TouchableOpacity style={styles.categoryCard}>
           <Image
@@ -83,6 +82,26 @@ const Categories = () => {
             </View>
             <Text style={styles.categoryDescription}>
               Discover and compare the sugar and calorie content of various carbonated drinks to make healthier beverage choices!
+            </Text>
+          </View>
+        </TouchableOpacity>
+                {/* Category 4: Coffee Drinks */}
+                <TouchableOpacity style={styles.categoryCard}>
+          <Image
+            source={{ uri: 'https://c8.alamy.com/comp/2C9J59C/coffee-packings-in-a-supermarket-2C9J59C.jpg' }}
+            style={styles.categoryImage}
+          />
+          <View style={styles.categoryTextContainer}>
+            <View style={styles.categoryHeader}>
+              <Text style={styles.categoryTitle}>Coffees</Text>
+              <IconButton
+                icon="chevron-right"
+                size={24}
+                color="#2F4F2F"
+              />
+            </View>
+            <Text style={styles.categoryDescription}>
+              Find the best coffee options by comparing caffeine levels, sugar content, and added flavors.
             </Text>
           </View>
         </TouchableOpacity>

@@ -24,6 +24,12 @@ const BottomNavBar = () => {
     navigation.navigate('Scanner');  // Navigate to the "Categories" screen
   };
 
+  const handleHome = () => {
+    console.log("Home button clicked");
+    navigation.navigate('Home');  // Navigate to the "Categories" screen
+  };
+
+
   const [routes] = React.useState([
     { key: 'home', title: 'Home', focusedIcon: 'home' },
     { key: 'recents', title: 'Recents', focusedIcon: 'history' },
@@ -41,6 +47,10 @@ const BottomNavBar = () => {
   });
 
   const handleTabChange = (newIndex) => {
+    if(newIndex===0)
+    {
+      handleHome();
+    }
     if (newIndex===2)
     {
       handleBarcode();

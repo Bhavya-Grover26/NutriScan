@@ -33,7 +33,8 @@ const ProductComparisonSchema = new mongoose.Schema({
         additives_tags: { type: [String], default: [] },
         allergens_tags: { type: [String], default: [] },
         Assigned_Clusters_New: { type: [String], default: [] },
-        Rank: { type: Number }
+        Rank: { type: Number },
+        classification: {type: [String]}
     }]
 });
 

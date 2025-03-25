@@ -85,9 +85,13 @@ export default function PreferenceNutrition() {
           </View>
 
           {/* Apply Button */}
-          <TouchableOpacity style={styles.applyButton}>
+          <TouchableOpacity 
+            style={styles.applyButton} 
+            onPress={() => navigation.navigate('Home')}
+          >
             <Text style={styles.applyButtonText}>Apply</Text>
           </TouchableOpacity>
+
         </View>
       </ScrollView>
       <BottomNavBar />
