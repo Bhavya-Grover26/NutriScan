@@ -1,13 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, TextInput, ScrollView, Image, TouchableOpacity, StyleSheet } from 'react-native';
 import { IconButton } from 'react-native-paper';
+import { useRoute } from '@react-navigation/native';
 import CategoryNavbar from './CategoryNavbar';
 import BottomNavBar from "./BottomNavBar";
 
 
 const SpecificCategories = () => {
-  const [selectedCategory, setSelectedCategory] = useState("bread");
+  const route = useRoute();
+const initialCategory = route.params?.category || "bread"; // Default to 'bread' if no category is provided
+const [selectedCategory, setSelectedCategory] = useState(initialCategory);
+
   const [categoryItems, setCategoryItems] = useState([]);
+  
 
   useEffect(() => {
     if (selectedCategory) {
@@ -21,7 +26,7 @@ const SpecificCategories = () => {
   .split(" ")                  // Split category into individual words
   .map((part) => part.trim())  // Trim each word
   .join("-");                  // Join with hyphens to form "bread-cereals"
-      const response = await fetch(`http://192.168.0.112:5001/products/${formattedCategory}`);
+      const response = await fetch(`http://192.168.1.10:5001/products/${formattedCategory}`);
       console.log("Fetching products from URL:", response);
 
       const data = await response.json();

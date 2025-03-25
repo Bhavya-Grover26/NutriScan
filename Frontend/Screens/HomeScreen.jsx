@@ -11,7 +11,7 @@ const HomeScreen = () => {
   const [search, setSearch] = useState("");
 
   useEffect(() => {
-    fetch("http://192.168.0.112:5001/products") // Replace with your actual backend URL
+    fetch("http://192.168.1.10:5001/products") // Replace with your actual backend URL
       .then((res) => res.json())
       .then((data) => {
         setProducts(data);

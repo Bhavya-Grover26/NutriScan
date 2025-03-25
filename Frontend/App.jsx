@@ -26,33 +26,6 @@ export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator>
-        
-        <Stack.Screen
-          name="PreferenceAllergen"
-          component={PreferenceAllergen}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="PreferenceAdditive"
-          component={PreferenceAdditive}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="PreferenceDiet"
-          component={PreferenceDiet}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="PreferenceIngredient"
-          component={PreferenceIngredient}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="PreferenceNutrition"
-          component={PreferenceNutrition}
-          options={{ headerShown: false }}
-        />
-
         <Stack.Screen
           name="Onboard1"
           component={Onboarding1}
@@ -83,6 +56,8 @@ export default function App() {
           component={SignupScreen}
           options={{ headerShown: false }}
         />
+
+         
         <Stack.Screen
           name="Home"
           component={HomeScreen}
@@ -116,6 +91,31 @@ export default function App() {
         <Stack.Screen
           name="BarcodeScan1"
           component={BarcodeScan1}
+          options={{ headerShown: false }}
+        />
+         <Stack.Screen
+          name="PreferenceAllergen"
+          component={PreferenceAllergen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="PreferenceAdditive"
+          component={PreferenceAdditive}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="PreferenceDiet"
+          component={PreferenceDiet}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="PreferenceIngredient"
+          component={PreferenceIngredient}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="PreferenceNutrition"
+          component={PreferenceNutrition}
           options={{ headerShown: false }}
         />
       </Stack.Navigator>

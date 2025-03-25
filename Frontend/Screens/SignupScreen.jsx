@@ -29,46 +29,50 @@ export default function SignupScreen({ navigation }) {
     setEmail(emailVar);
   }
 
-  function handleSubmit() {
-    if (!name || !email || !password || !phone) {
-      Alert.alert("Missing Fields", "All fields are required.");
-      return;
-    }
-
-    if (!validateEmail(email)) {
-      Alert.alert("Invalid Email", "Please provide a valid email address.");
-      return;
-    }
-
-    const userData = {
-      name,
-      email,
-      password,
-      phone,
-    };
-
-    fetch("http://192.168.0.112:5001/register", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(userData),
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-        return response.json();
-      })
-      .then((data) => {
-        Alert.alert("Success", "Registration successful!");
-        console.log(data);
-      })
-      .catch((error) => {
-        Alert.alert("Error", "Registration failed.");
-        console.error(error);
-      });
+function handleSubmit() {
+  if (!name || !email || !password || !phone) {
+    Alert.alert("Missing Fields", "All fields are required.");
+    return;
   }
+
+  if (!validateEmail(email)) {
+    Alert.alert("Invalid Email", "Please provide a valid email address.");
+    return;
+  }
+
+  const userData = {
+    name,
+    email,
+    password,
+    phone,
+  };
+
+  fetch("http://192.168.1.10:5001/register", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(userData),
+  })
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      return response.json();
+    })
+    .then((data) => {
+      Alert.alert("Success", "Registration successful!", [
+        {
+          text: "OK",
+          onPress: () => navigation.navigate("PreferenceAllergen"),
+        },
+      ]);
+    })
+    .catch((error) => {
+      Alert.alert("Error", "Registration failed.");
+      console.error(error);
+    });
+}
 
   return (
     <SafeAreaView style={styles.container}>
