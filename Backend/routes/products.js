@@ -12,7 +12,7 @@ router.get("/products", async (req, res) => {
         $project: { 
           product_name: 1, 
           image_url: 1, 
-          _id: 0 
+          _id: 1
         } 
       }
     ]);

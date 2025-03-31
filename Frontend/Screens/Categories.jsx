@@ -25,7 +25,7 @@ const Categories = () => {
       <ScrollView style={styles.categoryList}>
         {/* Category 1: Bread */}
         <TouchableOpacity style={styles.categoryCard}
-          onPress={() => navigation.navigate('SpecificCategories', { category: 'bread' })}>
+          onPress={() => navigation.navigate('SpecificCategories', { category: 'bread-cereals' })}>
           <Image
             source={{ uri: 'https://www.supermarketperimeter.com/ext/resources/2023/08/21/AdobeStock_198186611.jpg?height=667&t=1692630520&width=1080' }}
             style={styles.categoryImage}
@@ -46,7 +46,8 @@ const Categories = () => {
         </TouchableOpacity>
 
         {/* Category 2: Cheese */}
-        <TouchableOpacity style={styles.categoryCard}>
+        <TouchableOpacity style={styles.categoryCard}
+        onPress={() => navigation.navigate('SpecificCategories', { category: 'cheeses-cream' })}>
           <Image
             source={{ uri: 'https://gilbertsfresh.com.au/wp-content/uploads/2020/10/Cheese-Dairy-PAGE-Gilberts_180920_055-768x512.jpg' }}
             style={styles.categoryImage}
@@ -66,7 +67,8 @@ const Categories = () => {
           </View>
         </TouchableOpacity>
         {/* Category 3: Carbonated Drinks */}
-        <TouchableOpacity style={styles.categoryCard}>
+        <TouchableOpacity style={styles.categoryCard}
+        onPress={() => navigation.navigate('SpecificCategories', { category: 'beverages-carbonated' })}>
           <Image
             source={{ uri: 'https://c8.alamy.com/comp/DE4DMK/soft-drink-cans-bottles-possible-tax-on-some-sugary-high-sugar-content-DE4DMK.jpg' }}
             style={styles.categoryImage}
@@ -86,7 +88,8 @@ const Categories = () => {
           </View>
         </TouchableOpacity>
                 {/* Category 4: Coffee Drinks */}
-                <TouchableOpacity style={styles.categoryCard}>
+                <TouchableOpacity style={styles.categoryCard}
+                onPress={() => navigation.navigate('SpecificCategories', { category: ['beverages-coffee', 'coffee-coffees' , 'beverages-coffees']})}>
           <Image
             source={{ uri: 'https://c8.alamy.com/comp/2C9J59C/coffee-packings-in-a-supermarket-2C9J59C.jpg' }}
             style={styles.categoryImage}
