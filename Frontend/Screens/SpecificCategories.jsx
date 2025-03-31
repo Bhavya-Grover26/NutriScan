@@ -5,63 +5,72 @@ import { useRoute } from '@react-navigation/native';
 import CategoryNavbar from './CategoryNavbar';
 import BottomNavBar from "./BottomNavBar";
 
-
 const SpecificCategories = () => {
   const route = useRoute();
-const initialCategory = route.params?.category || "bread"; // Default to 'bread' if no category is provided
-const [selectedCategory, setSelectedCategory] = useState(initialCategory);
+  const initialCategory = route.params?.category || ['bread'];
+  console.log("Received categories:", initialCategory);
+    const [selectedCategory, setSelectedCategory] = useState(initialCategory);
 
   const [categoryItems, setCategoryItems] = useState([]);
-  
 
+  // Fetch products when the selected category changes
   useEffect(() => {
     if (selectedCategory) {
       fetchCategoryProducts(selectedCategory);
     }
   }, [selectedCategory]);
 
-  const fetchCategoryProducts = async (category) => {
-    try {
-      const formattedCategory = category
-  .split(" ")                  // Split category into individual words
-  .map((part) => part.trim())  // Trim each word
-  .join("-");                  // Join with hyphens to form "bread-cereals"
-      const response = await fetch(`http://192.168.1.10:5001/products/${formattedCategory}`);
-      console.log("Fetching products from URL:", response);
+const fetchCategoryProducts = async (categories) => {
+  try {
+    let formattedCategories;
 
-      const data = await response.json();
-
-      if (!Array.isArray(data)) {
-        console.warn("Unexpected API response:", data);
-        setCategoryItems([]);
-        return;
-      }
-
-      setCategoryItems(data);
-    } catch (error) {
-      console.error("Error fetching category products:", error);
+    // Check if categories is an array or a string
+    if (Array.isArray(categories)) {
+      formattedCategories = categories
+        .map((cat) => cat.trim().replace(/\s+/g, '-'))  // Format each category string
+        .join(','); // Join array items by commas for multi-category support
+    } else {
+      formattedCategories = categories.trim().replace(/\s+/g, '-'); // Format a single category
     }
-  };
+
+    // Fetch data from the API
+    const response = await fetch(`http://192.168.1.10:5001/products/${formattedCategories}`);
+    console.log('Fetching products from URL:', response.url); // Log the request URL
+
+    const data = await response.json();
+
+    // Ensure data is an array
+    if (!Array.isArray(data)) {
+      console.warn('Unexpected API response:', data);
+      setCategoryItems([]);
+      return;
+    }
+
+    setCategoryItems(data);
+  } catch (error) {
+    console.error('Error fetching category products:', error);
+  }
+};
 
   return (
     <View style={styles.container}>
       <View style={styles.navbar}>
         {/* Pass the setSelectedCategory callback to CategoryNavbar */}
-        <CategoryNavbar onCategorySelect={setSelectedCategory} />
+        <CategoryNavbar
+          onCategorySelect={setSelectedCategory}
+          currentCategory={selectedCategory}
+        />
       </View>
 
       <View style={styles.contentWrapper}>
         <View style={styles.uppercontent}></View>
         <View style={styles.header}>
-          <IconButton icon="arrow-left" size={24} onPress={() => {}} />
-          <Text style={styles.headerTitle}>{selectedCategory}</Text>
-          <IconButton icon="bell-outline" size={24} onPress={() => {}} />
+          <IconButton icon="" size={24} onPress={() => {}} />
+          <Text style={styles.headerTitle}>Categories</Text>
+          <IconButton icon="" size={24} onPress={() => {}} />
         </View>
 
-        <View style={styles.searchContainer}>
-          <TextInput style={styles.searchInput} placeholder="Search..." />
-          <IconButton icon="barcode-scan" size={24} onPress={() => {}} />
-        </View>
+       
 
         <View style={styles.maincontent}>
           <ScrollView style={styles.listContainer}>
@@ -80,10 +89,11 @@ const [selectedCategory, setSelectedCategory] = useState(initialCategory);
           </ScrollView>
         </View>
       </View>
-      <BottomNavBar/>
+      <BottomNavBar />
     </View>
   );
 };
+
 
 const styles = StyleSheet.create({
   container: {
@@ -92,7 +102,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#f5f5f5',
   },
   navbar: {
-    marginTop: 120,
+    marginTop: 50,
     width: 70,
     backgroundColor: '#fff',
     elevation: 5,
@@ -104,8 +114,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16, 
   },
   uppercontent: {
-    backgroundColor: 'green',
-    height: 120,
+    backgroundColor: '#1B623B',
+    height: 60,
     position: 'absolute',
     top: 0,
     left: 0,
@@ -124,7 +134,7 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#000',
+    color: '#fff',
   },
   searchContainer: {
     flexDirection: 'row',

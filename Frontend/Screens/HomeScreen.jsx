@@ -12,6 +12,14 @@ const HomeScreen = () => {
   const [search, setSearch] = useState("");
   const navigation = useNavigation();
   
+  const categoryMapping = {
+    Chips : ['snack crisps'],
+    Coffee: ["beverages-coffee", "coffee-coffees", "beverages-coffees"],
+    "Soft Drink": ["beverages-carbonated"],
+    Chocolate: ["chocolate-dark"],
+    Cereal: ['cereals breakfast', 'chocolate puffed']
+  };
+  
 
   useEffect(() => {
     fetch("http://192.168.1.10:5001/products") 
@@ -46,27 +54,47 @@ const HomeScreen = () => {
 
         {/* Category Section */}
         <View style={styles.categoryContainer}>
-          {["Chips", "Soft Drink", "Chocolate", "Juice", "Cereal"].map((category, index) => (
-            <View key={index} style={styles.categoryItem}>
-              <Text style={styles.categoryText}>{category}</Text>
-            </View>
-          ))}
-        </View>
+  {Object.keys(categoryMapping).map((category, index) => (
+    <View key={index} style={styles.categoryItem}>
+      <TouchableOpacity
+        onPress={() => {
+          const formattedCategories = categoryMapping[category] || [category.toLowerCase().replace(/\s+/g, "-")];
+
+          console.log("Navigating to SpecificCategories with:", formattedCategories);
+          navigation.navigate("SpecificCategories", { category: formattedCategories });
+        }}
+      >
+        <Text style={styles.categoryText}>{category}</Text>
+      </TouchableOpacity>
+    </View>
+  ))}
+</View>
+
+
 
         {/* Discover Section */}
         <Text style={styles.sectionTitle}>Discover</Text>
         <FlatList
-          data={products}
-          keyExtractor={(item) => item._id}
-          horizontal
-          renderItem={({ item }) => (
-            <View style={styles.productCard}>
-              <Image source={{ uri: item.image_url }} style={styles.productImage} />
-              <Text style={styles.productName}>{item.product_name}</Text>
-            </View>
-          )}
-          contentContainerStyle={{ paddingHorizontal: 10 }}
-        />
+  data={products}
+  keyExtractor={(item) => item._id}
+  horizontal
+  renderItem={({ item }) => (
+    <TouchableOpacity 
+      onPress={() => {
+        console.log("Product item:", item); // Logs the entire product object
+        console.log("Navigating with barcode:", item._id); // Logs barcode value
+        navigation.navigate("BarcodeScan1", { barcode: item._id });
+      }}
+      style={styles.productCard}
+    >
+      <Image source={{ uri: item.image_url }} style={styles.productImage} />
+      <Text style={styles.productName}>{item.product_name}</Text>
+    </TouchableOpacity>
+  )}
+  contentContainerStyle={{ paddingHorizontal: 10 }}
+/>
+
+
 
         {/* Info Cards Section */}
         {/* Info Cards Section */}
@@ -100,17 +128,21 @@ const HomeScreen = () => {
         {/* See More Section */}
         <Text style={styles.sectionTitle}>See more</Text>
         <FlatList
-          data={products}
-          keyExtractor={(item) => item._id}
-          numColumns={2}
-          renderItem={({ item }) => (
-            <View style={styles.seeMoreCard}>
-              <Image source={{ uri: item.image_url }} style={styles.seeMoreImage} />
-              <Text style={styles.seeMoreText}>{item.product_name}</Text>
-            </View>
-          )}
-          contentContainerStyle={{ paddingHorizontal: 10 }}
-        />
+  data={products}
+  keyExtractor={(item) => item._id}
+  numColumns={2}
+  renderItem={({ item }) => (
+    <TouchableOpacity 
+      onPress={() => navigation.navigate("BarcodeScan1", { barcode: item._id })}
+      style={styles.seeMoreCard}
+    >
+      <Image source={{ uri: item.image_url }} style={styles.seeMoreImage} />
+      <Text style={styles.seeMoreText}>{item.product_name}</Text>
+    </TouchableOpacity>
+  )}
+  contentContainerStyle={{ paddingHorizontal: 10 }}
+/>
+
       </ScrollView>
 
       {/* Sticky Bottom Navigation */}
