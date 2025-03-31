@@ -54,24 +54,28 @@ function handleSubmit() {
     },
     body: JSON.stringify(userData),
   })
-    .then((response) => {
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-      return response.json();
+    .then(async (response) => {
+      const data = await response.json();
+      console.log("Response from server:", data); // Log the full response
+      return data;
     })
     .then((data) => {
-      Alert.alert("Success", "Registration successful!", [
-        {
-          text: "OK",
-          onPress: () => navigation.navigate("PreferenceAllergen"),
-        },
-      ]);
+      if (data._id) {
+        Alert.alert("Success", "Registration successful!", [
+          {
+            text: "OK",
+            onPress: () => navigation.navigate("PreferenceAllergen", { user: data }),
+          },
+        ]);
+      } else {
+        Alert.alert("Error", "Registration failed. Server did not return _id.");
+      }
     })
     .catch((error) => {
-      Alert.alert("Error", "Registration failed.");
-      console.error(error);
-    });
+      console.error("Fetch error:", error);
+      Alert.alert("Error", "An error occurred while registering.");
+    });  
+    
 }
 
   return (

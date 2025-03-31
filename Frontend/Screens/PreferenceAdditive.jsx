@@ -3,13 +3,15 @@ import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-nati
 import Slider from '@react-native-community/slider';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import BottomNavBar from './BottomNavBar';
-import { useNavigation } from '@react-navigation/native'; // <-- Added for navigation
+import { useNavigation, useRoute } from '@react-navigation/native';
 
 export default function PreferenceAdditive() {
+  const route = useRoute();
+  const navigation = useNavigation();
   const [selectedAdditives, setSelectedAdditives] = useState([]);
-  const navigation = useNavigation(); // <-- Added for navigation support
+  const [avoidanceLevel, setAvoidanceLevel] = useState(1);
 
-  const Additives = ['Preservatives', 'MSG', 'Nitrates', 'Artificial Colors', 'High Fructose Corn Syrup', 'Propylene Glycol', 'Artificial Flavors', 'Sulfites', 'BHA/BHT'];
+  const Additives = ['Preservatives', 'MSG', 'Nitrates', 'Artificial Colors', 'Artificial Flavors', 'Sulfites'];
 
   const toggleAdditive = (Additive) => {
     if (selectedAdditives.includes(Additive)) {
@@ -19,7 +21,17 @@ export default function PreferenceAdditive() {
     }
   };
 
-  // Icons for different categories
+
+  const handleApply = () => {
+    const preferences = {
+      ...route.params,
+      selectedAdditives,
+    };
+    navigation.navigate('PreferenceDiet', preferences);
+  };
+  console.log("Received Data in PreferenceAdditive:", route.params);
+
+
   const categories = [
     { key: 'Allergen', name: 'Allergen', icon: 'food-off' },
     { key: 'Additive', name: 'Additive', icon: 'flask-outline' },
@@ -35,26 +47,24 @@ export default function PreferenceAdditive() {
           <Text style={styles.title}>My Preferences</Text>
         </View>
 
-        {/* Category Selection */}
         <View style={styles.categoryContainer}>
-      {categories.map((category) => (
-        <TouchableOpacity
-          key={category.key}
-          style={styles.categoryButton}
-          onPress={() => navigation.navigate(`Preference${category.key}`)}
-        >
-          <Icon name={category.icon} size={20} color="white" />
-          <Text style={styles.categoryText}>{category.name}</Text>
-        </TouchableOpacity>
-      ))}
-    </View>
+          {categories.map((category) => (
+            <TouchableOpacity
+              key={category.key}
+              style={styles.categoryButton}
+              onPress={() => navigation.navigate(`Preference${category.key}`, route.params)}
+            >
+              <Icon name={category.icon} size={20} color="white" />
+              <Text style={styles.categoryText}>{category.name}</Text>
+            </TouchableOpacity>
+          ))}
+        </View>
 
         <View style={styles.pageContainer}>
           <Text style={styles.description}>
-          Select the additives you want to avoid, and we’ll make sure to highlight any products that include them.
+            Select the additives you want to avoid, and we’ll make sure to highlight any products that include them.
           </Text>
 
-          {/* Additive Selection */}
           <View style={styles.AdditiveContainer}>
             {Additives.map((item, index) => (
               <TouchableOpacity
@@ -69,7 +79,6 @@ export default function PreferenceAdditive() {
             ))}
           </View>
 
-          {/* Avoidance Preference */}
           <Text style={styles.severityLabel}>Avoidance Preference</Text>
           <View style={styles.sliderContainer}>
             <Text style={styles.sliderText}>Occasionally Avoid</Text>
@@ -78,15 +87,16 @@ export default function PreferenceAdditive() {
               minimumValue={0}
               maximumValue={2}
               step={0.1}
+              value={avoidanceLevel}
+              onValueChange={setAvoidanceLevel}
               minimumTrackTintColor="#1B623B"
               thumbTintColor="#1B623B"
             />
             <Text style={styles.sliderText}>Strictly Avoid</Text>
           </View>
 
-          {/* Apply Button */}
-          <TouchableOpacity style={styles.applyButton}>
-            <Text style={styles.applyButtonText}>Apply</Text>
+          <TouchableOpacity style={styles.applyButton} onPress={handleApply}>
+            <Text style={styles.applyButtonText}>Next</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>

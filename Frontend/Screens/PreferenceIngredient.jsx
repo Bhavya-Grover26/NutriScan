@@ -3,13 +3,13 @@ import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-nati
 import Slider from '@react-native-community/slider';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import BottomNavBar from './BottomNavBar';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 
 export default function PreferenceIngredient() {
   const [selectedIngredients, setSelectedIngredients] = useState([]);
   const navigation = useNavigation();
-
-  const Ingredients = ['Lactose', 'Corn', 'Legumes', 'Gluten', 'Yeast', 'Citrus', 'Fructose', 'Nightshades', 'Garlic/Onions'];
+  const route = useRoute();
+  const Ingredients = ['Lactose', 'Corn', 'Legumes', 'Gluten', 'Yeast', 'Citrus', 'Fructose', 'Garlic/Onions'];
 
   const toggleIngredient = (Ingredient) => {
     if (selectedIngredients.includes(Ingredient)) {
@@ -18,6 +18,14 @@ export default function PreferenceIngredient() {
       setSelectedIngredients([...selectedIngredients, Ingredient]);
     }
   };
+  const handleApply = () => {
+    const preferences = {
+      ...route.params,
+      selectedIngredients,
+    };
+    navigation.navigate('PreferenceNutrition', preferences);
+  };
+  console.log("Received Data in PreferenceIngredient:", route.params);
 
   // Icons for different categories
   const categories = [
@@ -85,8 +93,8 @@ export default function PreferenceIngredient() {
           </View>
 
           {/* Apply Button */}
-          <TouchableOpacity style={styles.applyButton}>
-            <Text style={styles.applyButtonText}>Apply</Text>
+          <TouchableOpacity style={styles.applyButton} onPress={handleApply}>
+            <Text style={styles.applyButtonText}>Next</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>

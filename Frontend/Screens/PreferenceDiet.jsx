@@ -3,13 +3,14 @@ import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-nati
 import Slider from '@react-native-community/slider';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import BottomNavBar from './BottomNavBar';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 
 export default function PreferenceDiet() {
   const [selectedDiets, setSelectedDiets] = useState([]);
   const navigation = useNavigation(); 
+  const route = useRoute();
 
-  const Diets = ['Vegan', 'Dairy-Free', 'Low Sugar', 'Vegetarian', 'Keto', 'Low Sodium', 'Gluten-Free', 'Paleo', 'Organic'];
+  const Diets = ['Vegan', 'Dairy-Free', 'Low Sugar', 'Vegetarian', 'Jain', 'Low Sodium', 'Gluten-Free'];
 
   const toggleDiet = (Diet) => {
     if (selectedDiets.includes(Diet)) {
@@ -17,6 +18,13 @@ export default function PreferenceDiet() {
     } else {
       setSelectedDiets([...selectedDiets, Diet]);
     }
+  };
+  const handleApply = () => {
+    const preferences = {
+      ...route.params,
+      selectedDiets,
+    };
+    navigation.navigate('PreferenceIngredient', preferences);
   };
 
   // Icons for different categories
@@ -27,6 +35,8 @@ export default function PreferenceDiet() {
     { key: 'Ingredient', name: 'Ingredient', icon: 'basket' },
     { key: 'Nutrition', name: 'Nutrition', icon: 'chart-bar' },
   ];
+  console.log("Received Data in PreferenceDiet:", route.params);
+
 
   return (
     <View style={styles.container}>
@@ -86,8 +96,8 @@ export default function PreferenceDiet() {
           </View>
 
           {/* Apply Button */}
-          <TouchableOpacity style={styles.applyButton}>
-            <Text style={styles.applyButtonText}>Apply</Text>
+          <TouchableOpacity style={styles.applyButton}  onPress={handleApply}>
+            <Text style={styles.applyButtonText}>Next</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>

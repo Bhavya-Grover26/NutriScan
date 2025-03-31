@@ -46,9 +46,35 @@ export default function App() {
           component={Onboarding4}
           options={{ headerShown: false }}
         />
+        
         <Stack.Screen
           name="Login"
           component={LoginScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="PreferenceAllergen"
+          component={PreferenceAllergen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="PreferenceAdditive"
+          component={PreferenceAdditive}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="PreferenceDiet"
+          component={PreferenceDiet}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="PreferenceIngredient"
+          component={PreferenceIngredient}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="PreferenceNutrition"
+          component={PreferenceNutrition}
           options={{ headerShown: false }}
         />
         <Stack.Screen
@@ -93,31 +119,7 @@ export default function App() {
           component={BarcodeScan1}
           options={{ headerShown: false }}
         />
-         <Stack.Screen
-          name="PreferenceAllergen"
-          component={PreferenceAllergen}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="PreferenceAdditive"
-          component={PreferenceAdditive}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="PreferenceDiet"
-          component={PreferenceDiet}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="PreferenceIngredient"
-          component={PreferenceIngredient}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="PreferenceNutrition"
-          component={PreferenceNutrition}
-          options={{ headerShown: false }}
-        />
+         
       </Stack.Navigator>
     </NavigationContainer>
   );

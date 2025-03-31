@@ -4,14 +4,17 @@ import {
   StyleSheet, ScrollView, TouchableOpacity
 } from "react-native";
 import BottomNavBar from "./BottomNavBar";
+import { useNavigation, useRoute } from '@react-navigation/native';
 
 const HomeScreen = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
+  const navigation = useNavigation();
+  
 
   useEffect(() => {
-    fetch("http://192.168.1.10:5001/products") // Replace with your actual backend URL
+    fetch("http://192.168.1.10:5001/products") 
       .then((res) => res.json())
       .then((data) => {
         setProducts(data);
@@ -66,20 +69,33 @@ const HomeScreen = () => {
         />
 
         {/* Info Cards Section */}
-        <View style={styles.infoContainer}>
-          <View style={styles.infoBox}>
-            <Text style={styles.infoTitle}>Nutri-Score</Text>
-            <Text style={styles.infoText}>Helps you check nutritional quality at a glance.</Text>
-          </View>
-          <View style={styles.infoBox}>
-            <Text style={styles.infoTitle}>NOVA Score</Text>
-            <Text style={styles.infoText}>Ranks food based on its level of processing.</Text>
-          </View>
-          <View style={styles.infoBox}>
-            <Text style={styles.infoTitle}>Eco-Score</Text>
-            <Text style={styles.infoText}>Shows environmental impact of food products.</Text>
-          </View>
-        </View>
+        {/* Info Cards Section */}
+<View style={styles.infoContainer}>
+  <View style={styles.row}>
+    <View style={styles.infoBox}>
+      <Text style={styles.infoTitle}>Nutri-Score</Text>
+      <Text style={styles.infoText}>Helps you check nutritional quality at a glance.</Text>
+    </View>
+    <View style={styles.infoBox}>
+      <Text style={styles.infoTitle}>NOVA Score</Text>
+      <Text style={styles.infoText}>Ranks food based on its level of processing.</Text>
+    </View>
+  </View>
+
+  <View style={styles.row}>
+    <View style={styles.infoBox}>
+      <Text style={styles.infoTitle}>Eco-Score</Text>
+      <Text style={styles.infoText}>Shows environmental impact of food products.</Text>
+    </View>
+    <View style={styles.infoBox}>
+      <Text style={styles.infoTitle}>Scan Product</Text>
+      <TouchableOpacity style={styles.scanButton} onPress={() => navigation.navigate("Scanner")}>
+        <Text style={styles.scanButtonText}>Scan</Text>
+      </TouchableOpacity>
+    </View>
+  </View>
+</View>
+
 
         {/* See More Section */}
         <Text style={styles.sectionTitle}>See more</Text>
@@ -157,20 +173,42 @@ const styles = StyleSheet.create({
     textAlign: "center" 
   },
   infoContainer: { 
+    flexDirection: "column", 
+    alignItems: "center",
+    padding: 8
+  },
+  row: { 
     flexDirection: "row", 
     justifyContent: "space-between", 
-    alignItems: "center",
-    padding: 10 
+    width: "100%", 
+    marginBottom: 10 
   },
   infoBox: { 
     flex: 1, 
     backgroundColor: "#D4EDDA", 
     padding: 15, 
     borderRadius: 10, 
-    marginHorizontal: 5 
+    marginHorizontal: 5, 
+    alignItems: "center",
+    justifyContent: "center"
   },
-  infoTitle: { fontSize: 16, fontWeight: "bold", color: "#2D6A4F" },
-  infoText: { fontSize: 12, color: "#6C757D", marginTop: 5 },
+  infoTitle: { fontSize: 16, fontWeight: "bold", color: "#2D6A4F", textAlign: "center" },
+  infoText: { fontSize: 12, color: "#6C757D", marginTop: 5, textAlign: "center" },
+  
+  // Scan button styles
+  scanButton: {
+    backgroundColor: "#FFF",
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+    marginTop: 10
+  },
+  scanButtonText: {
+    color: "#2D6A4F",
+    fontSize: 14,
+    fontWeight: "bold",
+  },
+  
   seeMoreCard: { 
     flex: 1, 
     backgroundColor: "#fff", 

@@ -40,17 +40,19 @@ router.post("/register",async(req,res)=>{
     }
 
     try{
-        await User.create({
-            name:name,
-            email:email,
-            password:password,
-            phone:phone
-        });
-        res.send({status:'ok', data:"user created yay"})
-    } catch(error) {
-        res.send({status:'error', data:error})
-        console.error("Error creating user:", error);
-
+      const { name, email, password, phone } = req.body;
+      const newUser = new User({ name, email, password, phone });
+      await newUser.save();
+  
+      res.status(201).json({ 
+        _id: newUser._id, 
+        name: newUser.name, 
+        email: newUser.email, 
+        phone: newUser.phone 
+      }); // Ensure _id is returned
+    } catch (error) {
+      console.error("Error during registration:", error);
+      res.status(500).json({ message: "Registration failed" });
     }
 });
 

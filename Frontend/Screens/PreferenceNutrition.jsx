@@ -3,13 +3,14 @@ import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-nati
 import Slider from '@react-native-community/slider';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import BottomNavBar from './BottomNavBar';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 
 export default function PreferenceNutrition() {
   const [selectedNutritions, setSelectedNutritions] = useState([]);
   const navigation = useNavigation();
+  const route = useRoute();
 
-  const Nutritions = ['High Protein', 'Low Carb', 'No Added Sugars', 'High Fiber', 'Low Cholesterol', 'Fortified with Vitamins', 'Low Fat', 'Low Sodium', 'Whole Grains Only'];
+  const Nutritions = ['High Protein', 'Low Carb', 'High Fiber', 'Low Cholesterol', 'Low Fat', 'Low Sodium'];
 
   const toggleNutrition = (Nutrition) => {
     if (selectedNutritions.includes(Nutrition)) {
@@ -18,6 +19,45 @@ export default function PreferenceNutrition() {
       setSelectedNutritions([...selectedNutritions, Nutrition]);
     }
   };
+
+  const handleApply = async () => {
+    const preferences = {
+      userId: route.params.user._id,  // Extract user ID
+      allergen: route.params.preferences.allergen || [],
+      additive: route.params.selectedAdditives || [],
+      diet: route.params.selectedDiets || [],
+      ingredient: route.params.selectedIngredients || [],
+      nutrition: selectedNutritions,  // New selection from this page
+    };
+  
+    console.log("Sending Preferences:", preferences);
+  
+    try {
+      const response = await fetch("http://192.168.1.10:5001/preferences", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(preferences),
+      });
+  
+      const data = await response.json();
+      if (response.ok) {
+        console.log("Preferences saved successfully:", data);
+        alert("Preferences saved successfully!");
+      } else {
+        console.error("Error saving preferences:", data.message);
+        alert("Failed to save preferences.");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      alert("Network error while saving preferences.");
+    }
+  
+    navigation.navigate("Home");
+  };
+  
+
 
   // Icons for different categories
   const categories = [
@@ -87,7 +127,7 @@ export default function PreferenceNutrition() {
           {/* Apply Button */}
           <TouchableOpacity 
             style={styles.applyButton} 
-            onPress={() => navigation.navigate('Home')}
+            onPress={handleApply}
           >
             <Text style={styles.applyButtonText}>Apply</Text>
           </TouchableOpacity>

@@ -3,20 +3,22 @@ import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-nati
 import Slider from '@react-native-community/slider';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import BottomNavBar from './BottomNavBar';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 
 export default function PreferenceAllergen() {
-  const [selectedAllergens, setSelectedAllergens] = useState([]);
-  const navigation = useNavigation(); 
+  const route = useRoute();
+  const navigation = useNavigation();
+  const { user, preferences = {} } = route.params || {}; // Extract user and existing preferences
+  console.log("Received User Data:", user); 
+
+  const [selectedAllergens, setSelectedAllergens] = useState(preferences.allergen || []);
 
   const Allergens = ['Peanuts', 'Eggs', 'Fish', 'Tree Nuts', 'Wheat', 'Shellfish', 'Dairy', 'Soy', 'Sesame'];
 
   const toggleAllergen = (Allergen) => {
-    if (selectedAllergens.includes(Allergen)) {
-      setSelectedAllergens(selectedAllergens.filter(item => item !== Allergen));
-    } else {
-      setSelectedAllergens([...selectedAllergens, Allergen]);
-    }
+    setSelectedAllergens((prev) =>
+      prev.includes(Allergen) ? prev.filter((item) => item !== Allergen) : [...prev, Allergen]
+    );
   };
 
   // Icons for different categories
@@ -28,6 +30,11 @@ export default function PreferenceAllergen() {
     { key: 'Nutrition', name: 'Nutrition', icon: 'chart-bar' },
   ];
 
+  const handleNext = () => {
+    const updatedPreferences = { ...preferences, allergen: selectedAllergens };
+    navigation.navigate('PreferenceAdditive', { user, preferences: updatedPreferences });
+  };
+
   return (
     <View style={styles.container}>
       <ScrollView>
@@ -37,22 +44,21 @@ export default function PreferenceAllergen() {
 
         {/* Category Selection */}
         <View style={styles.categoryContainer}>
-      {categories.map((category) => (
-        <TouchableOpacity
-          key={category.key}
-          style={styles.categoryButton}
-          onPress={() => navigation.navigate(`Preference${category.key}`)}
-        >
-          <Icon name={category.icon} size={20} color="white" />
-          <Text style={styles.categoryText}>{category.name}</Text>
-        </TouchableOpacity>
-      ))}
-    </View>
-    
+          {categories.map((category) => (
+            <TouchableOpacity
+              key={category.key}
+              style={styles.categoryButton}
+              onPress={() => navigation.navigate(`Preference${category.key}`, { user, preferences })}
+            >
+              <Icon name={category.icon} size={20} color="white" />
+              <Text style={styles.categoryText}>{category.name}</Text>
+            </TouchableOpacity>
+          ))}
+        </View>
 
         <View style={styles.pageContainer}>
           <Text style={styles.description}>
-          Choose the ingredients you're allergic to, and we’ll flag any products that contain them.
+            Choose the ingredients you're allergic to, and we’ll flag any products that contain them.
           </Text>
 
           {/* Allergen Selection */}
@@ -85,9 +91,9 @@ export default function PreferenceAllergen() {
             <Text style={styles.sliderText}>Severe</Text>
           </View>
 
-          {/* Apply Button */}
-          <TouchableOpacity style={styles.applyButton}>
-            <Text style={styles.applyButtonText}>Apply</Text>
+          {/* Next Button */}
+          <TouchableOpacity style={styles.applyButton} onPress={handleNext}>
+            <Text style={styles.applyButtonText}>Next</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
