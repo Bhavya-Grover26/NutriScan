@@ -14,4 +14,4 @@ const SpecificCategorySchema = new mongoose.Schema({
   ],
 });
 
-module.exports = mongoose.model("Category", SpecificCategorySchema, "product_comparison"); // Replace with actual collection name
+module.exports = mongoose.model("Category", SpecificCategorySchema, "product_comparison"); 
