@@ -14,7 +14,7 @@ const Scanner = () => {
     const [refresh, setRefresh] = useState(false);
 
     const devices = useCameraDevices();
-    const device = devices.front;
+    const device = devices.back;
 
     useEffect(() => {
         (async () => {
@@ -47,9 +47,11 @@ const Scanner = () => {
         codeTypes: ["qr", "ean-13"],
         onCodeScanned: (codes) => {
             if (codes.length > 0 && !scannedBarcode) {
-                const barcodeData = codes[0].value;
-                setScannedBarcode(barcodeData);
-                fetchProductDetails(barcodeData);
+                setScanned(true);
+            const barcodeData = codes[0].value;
+            setScannedBarcode(barcodeData);
+            fetchProductDetails(barcodeData);
+            setTimeout(() => setScanned(false), 3000); 
             }
         }
     });
