@@ -4,6 +4,7 @@ import Slider from '@react-native-community/slider';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import BottomNavBar from './BottomNavBar';
 import { useNavigation, useRoute } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function PreferenceAllergen() {
   const route = useRoute();
@@ -30,10 +31,20 @@ export default function PreferenceAllergen() {
     { key: 'Nutrition', name: 'Nutrition', icon: 'chart-bar' },
   ];
 
-  const handleNext = () => {
+const handleNext = async () => {
+  try {
     const updatedPreferences = { ...preferences, allergen: selectedAllergens };
+    
+    // Save the updated preferences locally
+    await AsyncStorage.setItem("userPreferences", JSON.stringify(updatedPreferences));
+    
+    // Navigate to the next preference page
     navigation.navigate('PreferenceAdditive', { user, preferences: updatedPreferences });
-  };
+
+  } catch (error) {
+    console.error("Error saving preferences locally:", error);
+  }
+};
 
   return (
     <View style={styles.container}>

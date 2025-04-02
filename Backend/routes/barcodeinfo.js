@@ -67,8 +67,11 @@ router.get("/product/:barcode", async (req, res) => {
             additives_tags: product.additives_tags,
             allergens_tags: product.allergens_tags,
             classification: product.classification,
+            Final_Classification: product.Final_Classification,
         };
-
+        console.log("Fetched product details:", product);
+        console.log("Final_Classification:", product.Final_Classification);
+        
         // Find comparison data from product_comparison collection
         const comparison = await ProductComparison.findOne({ "products._id": barcode });
 

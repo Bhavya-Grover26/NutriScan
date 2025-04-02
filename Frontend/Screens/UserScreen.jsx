@@ -1,114 +1,146 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
-  TextInput,
   TouchableOpacity,
   StyleSheet,
   SafeAreaView,
+  ScrollView,
   Alert,
-  Dimensions,
 } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import Ionicons from "react-native-vector-icons/Ionicons";
+import BottomNavBar from "./BottomNavBar";
 
-export default function UpdateUserScreen({ navigation }) {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [passwordVisible, setPasswordVisible] = useState(false);
+function UserProfileScreen({ navigation }) {
+  const [userData, setUserData] = useState(null);
+  const [preferences, setPreferences] = useState(null);
 
-  const handleUpdate = async () => {
-    if (!name || !email || !password) {
-      Alert.alert("Error", "Please fill in all fields.");
-      return;
-    }
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const token = await AsyncStorage.getItem("authToken");
+        if (!token) {
+          Alert.alert("Error", "User not authenticated.");
+          navigation.navigate("Login");
+          return;
+        }
 
-    try {
-      const response = await fetch("http://192.168.1.10:5001/update-user", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name: name,
-          email: email,
-          password: password,
-        }),
-      });
+        // Fetch user details using the stored token
+        const userResponse = await fetch("http://192.168.1.10:5001/user-info", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        });
 
-      const data = await response.json();
-      if (data.status === "ok") {
-        Alert.alert("Success", "User details updated successfully!");
-        navigation.navigate("Home");
-      } else {
-        Alert.alert("Error", data.message || "Update failed");
+        if (!userResponse.ok) {
+          console.error("User fetch error");
+          Alert.alert("Error", "Failed to retrieve user details.");
+          return;
+        }
+
+        const userInfo = await userResponse.json();
+        setUserData(userInfo);
+
+        // Retrieve stored preferences from AsyncStorage
+        const storedPreferences = await AsyncStorage.getItem("userPreferences");
+        if (storedPreferences) {
+          setPreferences(JSON.parse(storedPreferences));
+        }
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+        Alert.alert("Error", "Something went wrong while loading profile.");
       }
+    };
+
+    fetchUserData();
+  }, []);
+
+  // Logout Function
+  const handleLogout = async () => {
+    try {
+      await AsyncStorage.removeItem("authToken"); // Remove token
+      navigation.replace("Login"); // Navigate to Login screen
     } catch (error) {
-      Alert.alert("Error", "An error occurred while updating.");
-      console.error("Update error:", error);
+      console.error("Logout error:", error);
+      Alert.alert("Error", "Failed to log out. Please try again.");
     }
   };
 
   return (
     <SafeAreaView style={styles.container}>
-      <Text style={styles.title}>Update Details</Text>
-      <View style={styles.whiteCard}>
-        <Text style={styles.welcometitle}>Edit Profile</Text>
-        <View style={styles.inputContainer}>
-          <TextInput
-            style={styles.input}
-            placeholder="Full Name"
-            placeholderTextColor="#6C757D"
-            value={name}
-            onChangeText={setName}
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Email"
-            placeholderTextColor="#6C757D"
-            value={email}
-            onChangeText={setEmail}
-            keyboardType="email-address"
-          />
-          <View style={styles.passwordContainer}>
-            <TextInput
-              style={styles.inputPassword}
-              placeholder="New Password"
-              secureTextEntry={!passwordVisible}
-              placeholderTextColor="#6C757D"
-              value={password}
-              onChangeText={setPassword}
-            />
-            <TouchableOpacity onPress={() => setPasswordVisible(!passwordVisible)}>
-              <Ionicons name={passwordVisible ? "eye" : "eye-off"} size={20} color="#6C757D" />
-            </TouchableOpacity>
-          </View>
-        </View>
+      <Text style={styles.title}>User Profile</Text>
+      <ScrollView style={styles.whiteCard}>
+        {userData ? (
+          <>
+            <Text style={styles.userInfo}>
+              <Ionicons name="person" size={18} color="#2E7D32" />{" "}
+              <Text style={styles.boldText}>Name:</Text> {userData.name}
+            </Text>
+            <Text style={styles.userInfo}>
+              <Ionicons name="mail" size={18} color="#2E7D32" />{" "}
+              <Text style={styles.boldText}>Email:</Text> {userData.email}
+            </Text>
+          </>
+        ) : (
+          <Text style={styles.loadingText}>Loading user details...</Text>
+        )}
 
-        <TouchableOpacity style={styles.updateButton} onPress={handleUpdate}>
-          <Text style={styles.updateButtonText}>Update</Text>
-        </TouchableOpacity>
-      </View>
-      <View style={styles.greenRectangle}></View>
+        {preferences ? (
+          <>
+            <Text style={styles.sectionTitle}>Preferences</Text>
+            <Text style={styles.userInfo}>
+              <Ionicons name="alert-circle" size={18} color="#D32F2F" />{" "}
+              <Text style={styles.boldText}>Allergens:</Text>{" "}
+              {preferences.allergen.length > 0
+                ? preferences.allergen.join(", ")
+                : "None"}
+            </Text>
+            <Text style={styles.userInfo}>
+              <Ionicons name="leaf" size={18} color="#388E3C" />{" "}
+              <Text style={styles.boldText}>Diet:</Text>{" "}
+              {preferences.selectedDiets.length > 0
+                ? preferences.selectedDiets.join(", ")
+                : "No preference"}
+            </Text>
+            <Text style={styles.userInfo}>
+              <Ionicons name="flask" size={18} color="#FF9800" />{" "}
+              <Text style={styles.boldText}>Selected Additives:</Text>{" "}
+              {preferences.selectedAdditives.length > 0
+                ? preferences.selectedAdditives.join(", ")
+                : "None"}
+            </Text>
+            <Text style={styles.userInfo}>
+              <Ionicons name="nutrition" size={18} color="#1976D2" />{" "}
+              <Text style={styles.boldText}>Ingredients Avoided:</Text>{" "}
+              {preferences.selectedIngredients.length > 0
+                ? preferences.selectedIngredients.join(", ")
+                : "None"}
+            </Text>
+          </>
+        ) : (
+          <Text style={styles.loadingText}>Loading preferences...</Text>
+        )}
+              <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+        <Ionicons name="log-out-outline" size={20} color="white" />
+        <Text style={styles.logoutButtonText}>Logout</Text>
+      </TouchableOpacity>
+      </ScrollView>
+
+      {/* Logout Button */}
+
+
+      <BottomNavBar />
     </SafeAreaView>
   );
 }
-
-const { width, height } = Dimensions.get("window");
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#FFFBEA",
-  },
-  whiteCard: {
-    flex: 1,
-    backgroundColor: "#FFFFFF",
-    borderTopLeftRadius: 30,
-    borderTopRightRadius: 30,
-    padding: 20,
-    marginTop: 75,
-    elevation: 5,
   },
   title: {
     fontSize: 28,
@@ -117,56 +149,50 @@ const styles = StyleSheet.create({
     color: "#2E7D32",
     textAlign: "center",
   },
-  welcometitle: {
+  whiteCard: {
+    flex: 1,
+    backgroundColor: "#FFFFFF",
+    borderTopLeftRadius: 30,
+    borderTopRightRadius: 30,
+    padding: 20,
+    marginTop: 20,
+    elevation: 5,
+  },
+  sectionTitle: {
     fontSize: 20,
     fontWeight: "bold",
-    color: "black",
-    textAlign: "left",
+    color: "#1B623B",
+    marginTop: 15,
   },
-  inputContainer: {
-    marginBottom: 20,
-  },
-  input: {
-    backgroundColor: "#FFF4C4",
-    padding: 12,
-    borderRadius: 8,
-    marginBottom: 10,
+  userInfo: {
     fontSize: 16,
+    color: "#333",
+    marginTop: 10,
+  },
+  boldText: {
+    fontWeight: "bold",
     color: "#000",
   },
-  inputPassword: {
-    flex: 1,
-    backgroundColor: "#FFF4C4",
-    padding: 12,
-    fontSize: 16,
-    color: "#000",
+  loadingText: {
+    textAlign: "center",
+    color: "#777",
+    marginTop: 20,
   },
-  passwordContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#FFF4C4",
-    borderRadius: 8,
-    paddingHorizontal: 10,
-  },
-  updateButton: {
-    backgroundColor: "#1B623B",
+  logoutButton: {
+    backgroundColor: "#D32F2F",
     padding: 15,
     borderRadius: 8,
     alignItems: "center",
-    marginBottom: 20,
+    flexDirection: "row",
+    justifyContent: "center",
+    margin: 20,
   },
-  updateButtonText: {
+  logoutButtonText: {
     color: "#FFF",
     fontSize: 16,
     fontWeight: "bold",
-  },
-  greenRectangle: {
-    position: "absolute",
-    bottom: 0,
-    width: width,
-    height: height * 0.07,
-    backgroundColor: "#1B623B",
-    borderTopLeftRadius: 30,
-    borderTopRightRadius: 30,
+    marginLeft: 10,
   },
 });
+
+export default UserProfileScreen;

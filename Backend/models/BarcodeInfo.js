@@ -12,10 +12,14 @@ const BarcodeInfoSchema = new mongoose.Schema({
     nova_group: { type: Number },
     additives_tags: { type: [String], default: [] },
     allergens_tags: { type: [String], default: [] },
-    classification: { type: [String], default: [] }
+    classification: { type: [String], default: [] },
+    Final_Classification: {
+        type: Map, // Store it as a Map (key-value pair)
+        of: String // Values inside are Strings (e.g., "Yes", "No")
+    }
 });
 
-mongoose.model("BarcodeInfo", BarcodeInfoSchema, "product_classification");
+mongoose.model("BarcodeInfo", BarcodeInfoSchema, "product_classification2");
 
 // Model for product_comparison collection
 const ProductComparisonSchema = new mongoose.Schema({
@@ -34,7 +38,11 @@ const ProductComparisonSchema = new mongoose.Schema({
         allergens_tags: { type: [String], default: [] },
         Assigned_Clusters_New: { type: [String], default: [] },
         Rank: { type: Number },
-        classification: {type: [String]}
+        classification: {type: [String]},
+        Final_Classification: {
+            type: Map, // Store it as a Map (key-value pair)
+            of: String // Values inside are Strings (e.g., "Yes", "No")
+        }
     }]
 });
 

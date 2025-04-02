@@ -4,11 +4,13 @@ import Slider from '@react-native-community/slider';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import BottomNavBar from './BottomNavBar';
 import { useNavigation, useRoute } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function PreferenceIngredient() {
-  const [selectedIngredients, setSelectedIngredients] = useState([]);
   const navigation = useNavigation();
   const route = useRoute();
+  const [selectedIngredients, setSelectedIngredients] = useState([]);
+  const { user, preferences = {} } = route.params || {};
   const Ingredients = ['Lactose', 'Corn', 'Legumes', 'Gluten', 'Yeast', 'Citrus', 'Fructose', 'Garlic/Onions'];
 
   const toggleIngredient = (Ingredient) => {
@@ -18,14 +20,29 @@ export default function PreferenceIngredient() {
       setSelectedIngredients([...selectedIngredients, Ingredient]);
     }
   };
-  const handleApply = () => {
-    const preferences = {
-      ...route.params,
-      selectedIngredients,
-    };
-    navigation.navigate('PreferenceNutrition', preferences);
+
+
+  const handleApply = async () => {
+    try {
+      const updatedPreferences = { 
+        ...preferences, 
+        selectedIngredients, 
+      };
+
+      // Save updated preferences locally
+      await AsyncStorage.setItem("userPreferences", JSON.stringify(updatedPreferences));
+
+      // Navigate to the next preference page
+      navigation.navigate('PreferenceNutrition', { user, preferences: updatedPreferences });
+
+    } catch (error) {
+      console.error("Error saving preferences locally:", error);
+    }
+    
   };
   console.log("Received Data in PreferenceIngredient:", route.params);
+
+
 
   // Icons for different categories
   const categories = [

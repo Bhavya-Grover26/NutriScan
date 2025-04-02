@@ -5,11 +5,16 @@ import {
 } from "react-native";
 import BottomNavBar from "./BottomNavBar";
 import { useNavigation, useRoute } from '@react-navigation/native';
+import AsyncStorage from "@react-native-async-storage/async-storage"; // Import AsyncStorage
 
 const HomeScreen = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
+  const [token, setToken] = useState(null);
+  const [preferences, setPreferences] = useState(null);
+
+
   const navigation = useNavigation();
   
   const categoryMapping = {
@@ -19,6 +24,29 @@ const HomeScreen = () => {
     Chocolate: ["chocolate-dark"],
     Cereal: ['cereals breakfast', 'chocolate puffed']
   };
+  
+  useEffect(() => {
+    const loadUserData = async () => {
+      try {
+        const storedToken = await AsyncStorage.getItem("userToken");
+        const storedPreferences = await AsyncStorage.getItem("userPreferences");
+        
+        console.log("🔹 Retrieved Token:", storedToken);
+        console.log("🔹 Retrieved Preferences:", storedPreferences);
+  
+        if (storedToken) {
+          setToken(storedToken);  // Now this function exists
+        }
+        if (storedPreferences) {
+          setPreferences(JSON.parse(storedPreferences));  // Now this function exists
+        }
+      } catch (error) {
+        console.error("Error loading user data:", error);
+      }
+    };
+  
+    loadUserData();
+  }, []);
   
 
   useEffect(() => {

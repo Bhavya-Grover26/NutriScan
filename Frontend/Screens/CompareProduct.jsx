@@ -1,9 +1,12 @@
 import React from 'react';
 import { View, Text, StyleSheet, Image, ScrollView } from 'react-native';
 import { useRoute } from '@react-navigation/native';
+import { IconButton } from "react-native-paper";
+import { useNavigation } from "@react-navigation/native";
 import BottomNavBar from "./BottomNavBar";
 
 const CompareProduct = () => {
+  const navigation = useNavigation();
   const route = useRoute();
   const { originalProduct, comparedProduct } = route.params;
 
@@ -19,9 +22,15 @@ const CompareProduct = () => {
     <>
     <View style={styles.container}>
       <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps="handled">
-        <View style={styles.header}>
-          <Text style={styles.headerText}>Compare Products</Text>
-        </View>
+      <View style={styles.header}>
+      <IconButton 
+        icon="arrow-left" 
+        size={24} 
+        color="white" 
+        onPress={() => navigation.goBack()} 
+      />
+      <Text style={styles.headerText}>Compare Products</Text>
+    </View>
 
         {/* Product Comparison Section */}
         <View style={styles.comparisonContainer}>
@@ -95,6 +104,7 @@ const CompareProduct = () => {
               )}
           </View>
         </View>
+        <View style={{ height: 80 }} />
       </ScrollView>
     </View>
     <BottomNavBar />
@@ -110,7 +120,7 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#2B7A0B',
+    backgroundColor: '#1B623B',
     padding: 10,
   },
   headerText: {
@@ -148,7 +158,7 @@ const styles = StyleSheet.create({
     marginTop: 5,
     textAlign: 'center',
     fontSize: 16,
-    color: '#2B7A0B',
+    color: '#1B623B',
   },
   productBrand: {
     color: '#595959',
@@ -158,7 +168,7 @@ const styles = StyleSheet.create({
   vsText: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#333',
+    color: '#1B623B',
     paddingHorizontal: 10,
     alignSelf: 'center',
   },
@@ -191,7 +201,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#2B7A0B',
+    color: '#1B623B',
     textAlign: 'center',
     marginBottom: 10,
   },

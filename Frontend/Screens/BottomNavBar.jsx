@@ -6,9 +6,7 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 const { width, height } = Dimensions.get("window");
 
 const HomeRoute = () => <Text style={styles.routeText}>Home</Text>;
-const RecentsRoute = () => <Text style={styles.routeText}>Recents</Text>;
 const BarcodeScanRoute = () => <Text style={styles.routeText}>Barcode Scan</Text>;
-const ChartRoute = () => <Text style={styles.routeText}>Chart</Text>;
 const UserRoute = () => <Text style={styles.routeText}>User</Text>;
 const CompareRoute = () => <Text style={styles.routeText}>Compare</Text>;
 
@@ -20,7 +18,6 @@ const BottomNavBar = () => {
 
   const routes = [
     { key: 'home', title: 'Home', focusedIcon: 'home' },
-    { key: 'recents', title: 'Recents', focusedIcon: 'history' },
     { key: 'barcodeScan', title: 'Scan', focusedIcon: 'barcode-scan' },
     { key: 'compare', title: 'Compare', focusedIcon: 'compare-horizontal' },
     { key: 'user', title: 'User', focusedIcon: 'account' },
@@ -28,7 +25,6 @@ const BottomNavBar = () => {
 
   const renderScene = BottomNavigation.SceneMap({
     home: HomeRoute,
-    recents: RecentsRoute,
     barcodeScan: BarcodeScanRoute,
     compare: CompareRoute,
     user: UserRoute, // Add this line
@@ -38,10 +34,9 @@ const BottomNavBar = () => {
   // Detect screen changes and update the active tab accordingly
   React.useEffect(() => {
     if (route.name === 'Home') setIndex(0);
-    else if (route.name === 'Recents') setIndex(1);
-    else if (route.name === 'Scanner') setIndex(2);
-    else if (route.name === 'Categories' || route.name === 'SpecificCategories') setIndex(3);
-    else if (route.name === 'PreferenceAdditive'|| route.name === 'PreferenceDiet' || route.name === 'PreferenceAllergen' || route.name === 'PreferenceIngredient' || route.name === 'PreferenceNutrition' ) setIndex(4);
+    else if (route.name === 'Scanner') setIndex(1);
+    else if (route.name === 'Categories' || route.name === 'SpecificCategories') setIndex(2);
+    else if (route.name === 'UpdateUserScreen') setIndex(3);
   }, [route.name]);
 
   const handleTabChange = (newIndex) => {
@@ -58,7 +53,7 @@ const BottomNavBar = () => {
         navigation.navigate('Categories');
         break;
       case 'user':
-        navigation.navigate('PreferenceAdditive');
+        navigation.navigate('UpdateUserScreen');
         break;
       default:
         break;

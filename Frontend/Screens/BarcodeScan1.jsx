@@ -4,14 +4,55 @@ import { IconButton } from "react-native-paper";
 import BottomNavBar from "./BottomNavBar";
 import { useRoute } from "@react-navigation/native";
 import { useNavigation } from "@react-navigation/native";
+import AsyncStorage from "@react-native-async-storage/async-storage"; // Import AsyncStorage
+
 
 const ProductDetailsScreen = () => {
+  const navigation = useNavigation();
+  const route = useRoute();
   const [activeTab, setActiveTab] = useState("Overview");
   const [product, setProduct] = useState(null);
   const [suggestedProducts, setSuggestedProducts] = useState([]);
-  const navigation = useNavigation();
-  const route = useRoute();
+  const [token, setToken] = useState(null);
+  const [preferences, setPreferences] = useState(null);
   const { barcode } = route.params;
+
+  const normalizeWord = (word) => {
+    if (word.endsWith("ies")) {
+      return word.slice(0, -3) + "y"; // candies → candy
+    } else if (word.endsWith("es")) {
+      return word.slice(0, -2); // tomatoes → tomato
+    } else if (word.endsWith("s") && !word.endsWith("ss")) {
+      return word.slice(0, -1); // eggs → egg
+    }
+    return word;
+  };
+
+  // Function to normalize text: lowercase + singular
+  const normalizeText = (text) => normalizeWord(text.toLowerCase().trim());
+
+  useEffect(() => {
+    const loadUserData = async () => {
+      try {
+        const storedToken = await AsyncStorage.getItem("userToken");
+        const storedPreferences = await AsyncStorage.getItem("userPreferences");
+        
+        console.log("🔹 Retrieved Token:", storedToken);
+        console.log("🔹 Retrieved Preferences:", storedPreferences);
+  
+        if (storedToken) setToken(storedToken);
+        if (storedPreferences) {
+          const parsedPreferences = JSON.parse(storedPreferences);
+          parsedPreferences.allergen = parsedPreferences.allergen.map(normalizeText); // Normalize allergens
+          setPreferences(parsedPreferences);
+        }
+      } catch (error) {
+        console.error("Error loading user data:", error);
+      }
+    };
+  
+    loadUserData();
+  }, []);
 
   useEffect(() => {
     // Fetch product details
@@ -21,37 +62,40 @@ const ProductDetailsScreen = () => {
         const response = await fetch(`http://192.168.1.10:5001/product/${barcode}`);
         const data = await response.json();
         console.log("Product details fetched:", data);
-  
-        // Compute classification from ingredients
-        let isNonVeg = false;
-        let isVegetarian = true;
-        let isVegan = true;
-        let isJain = true;
-  
-        if (data.classification) {
-          Object.values(data.classification).forEach((ingredient) => {
-            if (ingredient.non_veg === "Yes") {
-              isNonVeg = true;
-              isVegetarian = false;
-            }
-            if (ingredient.vegan === "No") {
-              isVegan = false;
-            }
-            if (ingredient.not_jain === "Yes") {
-              isJain = false;
-            }
-          });
-        }
-  
+        console.log("Received Final_Classification:", data.Final_Classification);
+
+        // Directly use Final_Classification from data
         setProduct({
           ...data,
           overallClassification: {
-            vegan: isVegan,
-            vegetarian: isVegetarian,
-            non_veg: isNonVeg,
-            jain: isJain,
+            vegan: data.Final_Classification.Vegan === "Yes",
+            vegetarian: data.Final_Classification.Vegetarian === "Yes",
+            non_veg: data.Final_Classification["Non-Veg"] === "Yes",
+            jain: data.Final_Classification.Jain === "Yes",
           },
+          
         });
+        const nonJainIngredients = new Set([
+          "garlic", "onion", "potato", "ginger", "radish", "carrot", "beetroot", "turnip", "yam", "brinjal", 
+          "eggplant", "fish oil", "sweet potato", "taro", "mushrooms", "leeks", "shallots", "spring onions", 
+          "asparagus", "cabbage", "cauliflower", "broccoli", "fennel", "sprouted grains", "yeast", "vinegar", 
+          "fermented foods", "alcohol", "beer", "wine", "garlic powder", "onion powder", "truffles", "meat", 
+          "fish", "chicken", "eggs", "lamb", "pork", "beef", "seafood", "crab", "lobster", "shrimp", "squid", 
+          "octopus", "oyster", "mussels", "clam", "gelatin", "anchovies", "caviar", "bone broth", "liver", 
+          "pate", "bacon", "ham", "salami", "sausages", "turkey", "duck", "goose", "venison", "quail", 
+          "frogs legs", "fish sauce", "shrimp paste", "bone marrow", "meat stock", "shellfish", "sushi", 
+          "pickled herring", "steak", "roast beef", "fish roe", "tandoori chicken", "smoked salmon", 
+          "beef extract", "chicken fajita", "mutton curry", "seafood paella", "chicken quesadilla", 
+          "beef stir-fry", "lamb kebabs", "eggplant curry"
+        ]);
+        const ingredientsList = product.ingredients_text.toLowerCase().split(/\s+/);
+        const containsNonJain = ingredientsList.some(ingredient => nonJainIngredients.has(ingredient));
+        if (containsNonJain) {
+          console.log("⚠️ Product contains non-Jain ingredients. Updating classification.");
+          product.overallClassification.jain = false; // Set Jain to false
+        }
+        setProduct({ ...product });
+
       } catch (error) {
         console.error("Error fetching product details:", error);
       }
@@ -94,6 +138,49 @@ const ProductDetailsScreen = () => {
     fetchProductDetails();
     fetchSuggestedProducts();
   }, [barcode]);
+
+  const getNovaStyle = (novaGroup) => {
+    switch (novaGroup) {
+      case 1:
+        return { backgroundColor: "#0B6623" }; // Dark Green
+      case 2:
+        return { backgroundColor: "#00A86B" }; // Medium Green
+      case 3:
+        return { backgroundColor: "#FFD300" }; // Amber
+      case 4:
+        return { backgroundColor: "#C21807" }; // Red
+      default:
+        return { backgroundColor: "#9E9E9E" }; // Grey
+    }
+  };
+  
+  const getNutriStyle = (nutriScore) => {
+    switch (nutriScore) {
+      case "a":
+        return { backgroundColor: "#0B6623" }; // Dark Green
+      case "b":
+        return { backgroundColor: "#00A86B" }; // Green
+      case "c":
+        return { backgroundColor: "#FFD300" }; // Yellow
+      case "d":
+        return { backgroundColor: "#FC6A03" }; // Orange
+      case "e":
+        return { backgroundColor: "#C21807" }; // Red
+      default:
+        return { backgroundColor: "#9E9E9E" }; // Grey
+    }
+  };
+
+  const additives = {
+    'Preservatives': new Set(['E200', 'E201', 'E202', 'E203', 'E210', 'E211', 'E212', 'E213', 'E214', 'E215', 'E216', 'E217', 'E218', 'E219', 
+                               'E220', 'E221', 'E222', 'E223', 'E224', 'E225', 'E226', 'E227', 'E228', 'E249', 'E250', 'E251', 'E252']),
+    'MSG': new Set(['E620', 'E621', 'E622', 'E623', 'E624', 'E625']),
+    'Nitrates & Nitrites': new Set(['E249', 'E250', 'E251', 'E252']),
+    'Artificial Colors': new Set(['E100', 'E101', 'E102', 'E110', 'E120', 'E122', 'E124', 'E129', 'E132', 'E133', 'E150a', 'E150b', 'E150c', 'E150d']),
+    'Artificial Flavors': new Set(['E620', 'E621', 'E622', 'E623', 'E624', 'E625', 'E627', 'E631', 'E635']),
+    'Sulfites': new Set(['E220', 'E221', 'E222', 'E223', 'E224', 'E226', 'E227'])
+  };
+  
   
 
   if (!product) {
@@ -110,8 +197,12 @@ const ProductDetailsScreen = () => {
       <View style={styles.header}>
         <Text style={styles.headerText}>Product Details</Text>
         <TouchableOpacity style={styles.closeButton}>
-          <IconButton icon="close" size={24} color="white" />
-        </TouchableOpacity>
+        <IconButton 
+      icon="close" 
+      size={24} 
+      color="white" 
+      onPress={() => navigation.goBack()} 
+    />        </TouchableOpacity>
       </View>
 
       {/* Success Message */}
@@ -158,67 +249,139 @@ const ProductDetailsScreen = () => {
           ))}
         </View>
 
-        {activeTab === "Overview" && (
-  <View style={styles.overviewContainer}>
-    <Text style={styles.sectionTitle}>Classification:</Text>
-    <View style={styles.classificationTable}>
-      <View style={styles.tableRow}>
-        <View style={styles.tableCell}>
-          <Text>Vegan:</Text>
-          <IconButton 
-            icon={product.overallClassification.vegan ? "check" : "alpha-x"} 
-            size={18} 
-            iconColor={product.overallClassification.vegan ? "green" : "red"} 
-          />
-        </View>
-        <View style={styles.tableCell}>
-          <Text>Vegetarian:</Text>
-          <IconButton 
-            icon={product.overallClassification.vegetarian ? "check" : "alpha-x"} 
-            size={18} 
-            iconColor={product.overallClassification.vegetarian ? "green" : "red"} 
-          />
-        </View>
+{/* Overview Section */}
+{activeTab === "Overview" && (
+    <View style={styles.overviewContainer}>
+    <Text style={styles.sectionTitle}>For you:</Text>
+
+{preferences?.selectedDiets?.length > 0 &&
+  preferences.selectedDiets.map((diet) => {
+    const key = diet.toLowerCase(); // Convert to lowercase for consistency
+    return (
+      <View
+        key={key}
+        style={[
+          styles.dietBox,
+          {
+            borderColor: product.overallClassification[key] ? "#1A2421" : "#800000",
+            borderWidth: 2, // Adjust thickness if needed
+            backgroundColor: "transparent", // No background fill
+          },
+        ]}
+        
+      >
+        <Text
+          style={[
+            styles.dietText,
+            { color: product.overallClassification[key] ? "black" : "black" },
+          ]}
+        >
+          {product.overallClassification[key]
+            ? `The product is ${diet}.`
+            : `⚠️ The product is not ${diet}.`}
+        </Text>
       </View>
-      <View style={styles.tableRow}>
-        <View style={styles.tableCell}>
-          <Text>Non-Veg:</Text>
-          <IconButton 
-            icon={product.overallClassification.non_veg ? "check" : "alpha-x"} 
-            size={18} 
-            iconColor={product.overallClassification.non_veg ? "green" : "red"} 
-          />
-        </View>
-        <View style={styles.tableCell}>
-          <Text>Jain:</Text>
-          <IconButton 
-            icon={product.overallClassification.jain ? "check" : "alpha-x"} 
-            size={18} 
-            iconColor={product.overallClassification.jain ? "green" : "red"} 
-          />
-        </View>
+    );
+  })}
+
+
+    {/* Show unwanted additives based on user preferences */}
+{/* Show unwanted additives based on user preferences */}
+{(() => {
+  const detectedAllergens = product.ingredients_text
+    .split(/\s+/)
+    .map(normalizeText)
+    .filter((word) => preferences?.allergen?.some((allergen) => word.includes(allergen)));
+
+  const detectedSelectedIngredients = product.ingredients_text
+    .split(/\s+/)
+    .map(normalizeText)
+    .filter((word) => preferences?.selectedIngredients?.some((ingredient) => word.includes(ingredient)));
+
+  if (detectedAllergens.length > 0 || detectedSelectedIngredients.length > 0) {
+    return (
+      <View style={styles.allergenWarning}>
+        {detectedAllergens.length > 0 && (
+          <Text style={styles.allergenText}>
+            ⚠️ <Text style={{ fontWeight: "bold", fontStyle: "italic" }}>Allergens: </Text>
+            {detectedAllergens.join(", ")}
+          </Text>
+        )}
+        {detectedSelectedIngredients.length > 0 && (
+          <Text style={styles.selectedIngredientText}>
+            ⚠️ <Text style={{ fontWeight: "bold", fontStyle: "italic" }}>Selected Ingredients Found: </Text>
+            {detectedSelectedIngredients.join(", ")}
+          </Text>
+        )}
       </View>
-    </View>
-    
-    <View style={styles.infoRow}>
-      <Text style={styles.infoText}>NOVA Group: {product.nova_group}</Text>
-      <Text style={styles.infoText}>NutriScore: {product.nutriscore_tags?.join(", ")}</Text>
+    );
+  }
+  return null;
+})()}
+
+
+
+    <View style={styles.nutriNovaContainer}>
+      <View style={[styles.novaBadge, getNovaStyle(product.nova_group)]}>
+        <Text style={styles.novaText}>NOVA Group: {product.nova_group}</Text>
+      </View>
+
+      <View style={[styles.nutriBadge, getNutriStyle(product.nutriscore_tags?.[0])]}>
+        <Text style={styles.nutriText}>Nutri-Score: {product.nutriscore_tags?.[0]?.toUpperCase()}</Text>
+      </View>
     </View>
   </View>
 )}
 
 
+
        
 
         {/* Ingredients Info */}
-        {activeTab === "Ingredient" && (
-          <View style={styles.infocontainer}>
-            <Text style={styles.sectionTitle}>Ingredients:</Text>
-            <Text>{product.ingredients_text}</Text>
-          </View>
-        )}
+{activeTab === "Ingredient" && (
+  <View style={styles.infocontainer}>
+    <Text style={styles.sectionTitle}>Ingredients:</Text>
 
-        {/* Nutrition Info */}
+    {/* Detect Allergens and Show Warning Banner */}
+    {(() => {
+      const detectedAllergens = product.ingredients_text
+        .split(/\s+/)
+        .map(normalizeText)
+        .filter((word) => preferences?.allergen?.some((allergen) => word.includes(allergen)));
+
+      if (detectedAllergens.length > 0) {
+        return (
+          <View style={styles.allergenWarning}>
+            <Text style={styles.allergenText}>
+              ⚠️   <Text style={{ fontWeight: "bold", fontStyle: "italic" }}>Allergens: </Text>
+              {detectedAllergens.join(", ")}
+            </Text>
+          </View>
+        );
+      }
+      return null;
+    })()}
+
+    {/* Display Ingredients with Highlighted Allergens */}
+    <Text>
+      {product.ingredients_text.split(/\s+/).map((word, index) => {
+        const normalizedWord = normalizeText(word);
+
+        const isAllergen = preferences?.allergen?.some((allergen) =>
+          normalizedWord.includes(allergen)
+        );
+
+        return (
+          <Text key={index} style={isAllergen ? { color: "red", fontWeight: "bold" } : {}}>
+            {word}{" "}
+          </Text>
+        );
+      })}
+    </Text>
+  </View>
+)}
+
+
         {/* Nutrition Info */}
         {activeTab === "Nutrition" && (
           <View style={styles.infocontainer}>
@@ -226,9 +389,9 @@ const ProductDetailsScreen = () => {
             {product.nutrient_levels_tags.map((tag, index) => {
               let color = "green"; // Default color for "low"
               if (tag.includes("high")) {
-                color = "red";
-              } else if (tag.includes("medium")) {
-                color = "yellow";
+                color = "#C21807";
+              } else if (tag.includes("moderate")) {
+                color = "#FFD300";
               }
               return (
                 <View key={index} style={{ flexDirection: "row", alignItems: "center", marginVertical: 2 }}>
@@ -425,6 +588,82 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginTop: 4,
   },
+  allergenWarning: {
+    backgroundColor: "#E53935", // Red alert background
+    padding: 10,
+    borderRadius: 10,
+    marginBottom: 10,
+    alignItems: "center",
+  },
+  
+  allergenText: {
+    color: "white",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+
+  nutriNovaContainer: {
+    flexDirection: "row",
+    justifyContent: "space-evenly",
+    alignItems: "center",
+    marginVertical: 10,
+  },
+  
+  novaBadge: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 12,
+  },
+  
+  novaText: {
+    color: "white",
+    fontWeight: "bold",
+    fontSize: 14,
+  },
+  
+  nutriBadge: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 12,
+  },
+  
+  nutriText: {
+    color: "white",
+    fontWeight: "bold",
+    fontSize: 14,
+    textTransform: "uppercase",
+  },
+
+  additivesWarning: {
+    padding: 10,
+    borderRadius: 10,
+    marginTop: 10,
+    borderWidth: 1,
+    borderColor: "#8FBC8F",  // Darker Green Border
+  },
+  additivesText: {
+    color: "#2F6627", // Dark Green Text
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  additivesDetails: {
+    color: "#2F6627", 
+    fontSize: 14,
+    marginLeft: 5,
+  },
+  
+  dietBox: {
+    padding: 10,
+    marginVertical: 10,
+    borderRadius: 5,
+    alignItems: "center",
+  },
+  dietText: {
+    color: "white",
+    fontWeight: "bold",
+    fontSize: 16,
+  },
+  
   
 });
 

@@ -4,13 +4,17 @@ import Slider from '@react-native-community/slider';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import BottomNavBar from './BottomNavBar';
 import { useNavigation, useRoute } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 
 export default function PreferenceDiet() {
-  const [selectedDiets, setSelectedDiets] = useState([]);
   const navigation = useNavigation(); 
   const route = useRoute();
+  const [selectedDiets, setSelectedDiets] = useState([]);
+  const { user, preferences = {} } = route.params || {};
+  
 
-  const Diets = ['Vegan', 'Dairy-Free', 'Low Sugar', 'Vegetarian', 'Jain', 'Low Sodium', 'Gluten-Free'];
+  const Diets = ['Vegan', 'Dairy-Free',  'Vegetarian', 'Jain', 'Gluten-Free'];
 
   const toggleDiet = (Diet) => {
     if (selectedDiets.includes(Diet)) {
@@ -19,13 +23,26 @@ export default function PreferenceDiet() {
       setSelectedDiets([...selectedDiets, Diet]);
     }
   };
-  const handleApply = () => {
-    const preferences = {
-      ...route.params,
-      selectedDiets,
-    };
-    navigation.navigate('PreferenceIngredient', preferences);
+
+  const handleApply = async () => {
+    try {
+      const updatedPreferences = { 
+        ...preferences, 
+        selectedDiets, 
+      };
+
+      // Save updated preferences locally
+      await AsyncStorage.setItem("userPreferences", JSON.stringify(updatedPreferences));
+
+      // Navigate to the next preference page
+      navigation.navigate('PreferenceIngredient', { user, preferences: updatedPreferences });
+
+    } catch (error) {
+      console.error("Error saving preferences locally:", error);
+    }
   };
+  console.log("Received Data in PreferenceDiet:", route.params);
+
 
   // Icons for different categories
   const categories = [
