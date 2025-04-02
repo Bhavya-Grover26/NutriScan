@@ -10,6 +10,7 @@ import {
   Alert,
 } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function SignupScreen({ navigation }) {
   const [passwordVisible, setPasswordVisible] = useState(false);
@@ -24,59 +25,68 @@ export default function SignupScreen({ navigation }) {
     return emailRegex.test(email);
   }
 
-  function handleEmail(e) {
-    const emailVar = e.nativeEvent.text;
-    setEmail(emailVar);
+  // Basic phone number validation
+  function validatePhone(phone) {
+    const phoneRegex = /^[0-9]{10}$/; // Adjust as needed
+    return phoneRegex.test(phone);
   }
 
-function handleSubmit() {
-  if (!name || !email || !password || !phone) {
-    Alert.alert("Missing Fields", "All fields are required.");
-    return;
-  }
-
-  if (!validateEmail(email)) {
-    Alert.alert("Invalid Email", "Please provide a valid email address.");
-    return;
-  }
-
-  const userData = {
-    name,
-    email,
-    password,
-    phone,
-  };
-
-  fetch("http://192.168.1.10:5001/register", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(userData),
-  })
-    .then(async (response) => {
+  async function handleSubmit() {
+    if (!name || !email || !password || !phone) {
+      Alert.alert("Missing Fields", "All fields are required.");
+      return;
+    }
+  
+    if (!validateEmail(email)) {
+      Alert.alert("Invalid Email", "Please enter a valid email address.");
+      return;
+    }
+  
+    if (!validatePhone(phone)) {
+      Alert.alert("Invalid Phone Number", "Enter a valid 10-digit phone number.");
+      return;
+    }
+  
+    const userData = { name, email, password, phone };
+  
+    try {
+      const response = await fetch("http://192.168.1.10:5001/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(userData),
+      });
+  
       const data = await response.json();
-      console.log("Response from server:", data); // Log the full response
-      return data;
-    })
-    .then((data) => {
-      if (data._id) {
+  
+      if (response.status === 400) {
+        Alert.alert("Error", data.message || "User already exists.");
+        return;
+      }
+  
+      if (response.status === 201 && data.token) {
+        console.log("🔹 Received Token from Backend:", data.token);
+  
+        // Store the token
+        await AsyncStorage.setItem("authToken", data.token);
+        const storedToken = await AsyncStorage.getItem("authToken");
+        console.log("✅ Token Stored in AsyncStorage:", storedToken);
+  
         Alert.alert("Success", "Registration successful!", [
           {
             text: "OK",
-            onPress: () => navigation.navigate("PreferenceAllergen", { user: data }),
+            onPress: () =>
+              navigation.navigate("PreferenceAllergen", { user: data }),
           },
         ]);
       } else {
-        Alert.alert("Error", "Registration failed. Server did not return _id.");
+        Alert.alert("Error", "Registration failed.");
       }
-    })
-    .catch((error) => {
+    } catch (error) {
       console.error("Fetch error:", error);
       Alert.alert("Error", "An error occurred while registering.");
-    });  
-    
-}
+    }
+  }
+  
 
   return (
     <SafeAreaView style={styles.container}>
@@ -90,7 +100,31 @@ function handleSubmit() {
             placeholder="Enter your full name"
             placeholderTextColor="#6C757D"
             value={name}
-            onChangeText={(text) => setName(text)}
+            onChangeText={setName}
+          />
+        </View>
+
+        <View style={styles.inputGroup}>
+          <Text style={styles.inputLabel}>Email</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Enter your email"
+            keyboardType="email-address"
+            placeholderTextColor="#6C757D"
+            value={email}
+            onChangeText={setEmail}
+          />
+        </View>
+
+        <View style={styles.inputGroup}>
+          <Text style={styles.inputLabel}>Phone Number</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Phone number"
+            keyboardType="phone-pad"
+            placeholderTextColor="#6C757D"
+            value={phone}
+            onChangeText={setPhone}
           />
         </View>
 
@@ -103,7 +137,7 @@ function handleSubmit() {
               secureTextEntry={!passwordVisible}
               placeholderTextColor="#6C757D"
               value={password}
-              onChangeText={(text) => setPassword(text)}
+              onChangeText={setPassword}
             />
             <TouchableOpacity
               onPress={() => setPasswordVisible(!passwordVisible)}
@@ -117,29 +151,6 @@ function handleSubmit() {
           </View>
         </View>
 
-        <View style={styles.inputGroup}>
-          <Text style={styles.inputLabel}>Email</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Enter your email"
-            keyboardType="email-address"
-            placeholderTextColor="#6C757D"
-            value={email}
-            onChange={handleEmail}
-          />
-        </View>
-
-        <View style={styles.inputGroup}>
-          <Text style={styles.inputLabel}>Phone Number</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Phone number"
-            placeholderTextColor="#6C757D"
-            value={phone}
-            onChangeText={(text) => setPhone(text)}
-          />
-        </View>
-
         <Text style={styles.agreementText}>
           By continuing, you agree to Terms of Use and Privacy Policy.
         </Text>
@@ -148,28 +159,13 @@ function handleSubmit() {
           <Text style={styles.signupButtonText}>Sign Up</Text>
         </TouchableOpacity>
 
-        <Text style={styles.orText}>or sign up with</Text>
-
-        <View style={styles.socialButtons}>
-          <TouchableOpacity style={styles.socialButton}>
-            <Ionicons name="logo-google" size={24} color="#4CAF50" />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.socialButton}>
-            <Ionicons name="logo-facebook" size={24} color="#4CAF50" />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.socialButton}>
-            <Ionicons name="finger-print" size={24} color="#4CAF50" />
-          </TouchableOpacity>
-        </View>
-
         <TouchableOpacity onPress={() => navigation.navigate("Login")}>
           <Text style={styles.loginText}>
-            Already have an account? <Text style={styles.loginLink}>Log In</Text>
+            Already have an account?{" "}
+            <Text style={styles.loginLink}>Log In</Text>
           </Text>
         </TouchableOpacity>
       </View>
-
-      <View style={styles.greenRectangle}></View>
     </SafeAreaView>
   );
 }
@@ -177,25 +173,49 @@ function handleSubmit() {
 const { width, height } = Dimensions.get("window");
 
 const styles = StyleSheet.create({
-  container: 
-  { 
-    flex: 1, 
-    backgroundColor: "#FFFBEA" 
+  container: { flex: 1, backgroundColor: "#FFFBEA" },
+  title: {
+    fontSize: 28,
+    marginTop: 40,
+    fontWeight: "bold",
+    color: "#2E7D32",
+    textAlign: "center",
   },
-  title: { fontSize: 28, marginTop: 40, fontWeight: "bold", color: "#2E7D32", textAlign: "center" },
-  whiteCard: { flex: 1, backgroundColor: "#FFFFFF", borderTopLeftRadius: 30, borderTopRightRadius: 30, padding: 20, marginTop: 20, elevation: 5 },
+  whiteCard: {
+    flex: 1,
+    backgroundColor: "#FFFFFF",
+    borderTopLeftRadius: 30,
+    borderTopRightRadius: 30,
+    padding: 20,
+    marginTop: 20,
+    elevation: 5,
+  },
   inputGroup: { marginBottom: 10 },
   inputLabel: { fontSize: 14, color: "#000", marginBottom: 5 },
-  input: { backgroundColor: "#FFF4C4", padding: 12, borderRadius: 8, fontSize: 14, color: "#000" },
-  inputPassword: { flex: 1, backgroundColor: "#FFF4C4", padding: 12, fontSize: 14, color: "#000" },
-  passwordContainer: { flexDirection: "row", alignItems: "center", backgroundColor: "#FFF4C4", borderRadius: 8, paddingHorizontal: 10 },
+  input: {
+    backgroundColor: "#FFF4C4",
+    padding: 12,
+    borderRadius: 8,
+    fontSize: 14,
+    color: "#000",
+  },
+  inputPassword: {
+    flex: 1,
+    backgroundColor: "#FFF4C4",
+    padding: 12,
+    fontSize: 14,
+    color: "#000",
+  },
+  passwordContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#FFF4C4",
+    borderRadius: 8,
+    paddingHorizontal: 10,
+  },
   agreementText: { fontSize: 12, color: "#6C757D", textAlign: "center", marginBottom: 7 },
   signupButton: { backgroundColor: "#1B623B", padding: 15, borderRadius: 8, alignItems: "center", marginBottom: 7 },
   signupButtonText: { color: "#FFF", fontSize: 16, fontWeight: "bold" },
-  orText: { textAlign: "center", marginBottom: 10, color: "#6C757D" },
-  socialButtons: { flexDirection: "row", justifyContent: "space-around", marginBottom: 20 },
-  socialButton: { backgroundColor: "#FFF4C4", padding: 8, borderRadius: 50 },
   loginText: { textAlign: "center", color: "#6C757D" },
   loginLink: { color: "#1B623B", fontWeight: "bold" },
-  greenRectangle: { position: "absolute", bottom: 0, width: width, height: height * 0.02, backgroundColor: "#1B623B", borderTopLeftRadius: 30, borderTopRightRadius: 30 },
 });

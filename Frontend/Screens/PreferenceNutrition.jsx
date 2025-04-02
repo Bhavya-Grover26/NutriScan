@@ -4,11 +4,13 @@ import Slider from '@react-native-community/slider';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import BottomNavBar from './BottomNavBar';
 import { useNavigation, useRoute } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function PreferenceNutrition() {
   const [selectedNutritions, setSelectedNutritions] = useState([]);
   const navigation = useNavigation();
   const route = useRoute();
+  const { user, preferences = {} } = route.params || {};
 
   const Nutritions = ['High Protein', 'Low Carb', 'High Fiber', 'Low Cholesterol', 'Low Fat', 'Low Sodium'];
 
@@ -21,44 +23,67 @@ export default function PreferenceNutrition() {
   };
 
   const handleApply = async () => {
-    const preferences = {
-      userId: route.params.user._id,  // Extract user ID
-      allergen: route.params.preferences.allergen || [],
-      additive: route.params.selectedAdditives || [],
-      diet: route.params.selectedDiets || [],
-      ingredient: route.params.selectedIngredients || [],
-      nutrition: selectedNutritions,  // New selection from this page
-    };
-  
-    console.log("Sending Preferences:", preferences);
-  
     try {
+      const token = await AsyncStorage.getItem("authToken"); 
+      const storedPreferences = await AsyncStorage.getItem("userPreferences"); 
+  
+      console.log("🔹 Token being sent:", token); 
+      console.log("🔹 Stored Preferences:", storedPreferences);
+  
+      if (!token || !storedPreferences) {
+        console.error("❌ Missing token or preferences data");
+        alert("Error retrieving preferences. Please try again.");
+        return;
+      }
+  
+      const preferencesData = JSON.parse(storedPreferences);
+  
+      // Ensure nutrition is added
+      preferencesData.selectedNutritions = selectedNutritions; 
+  
+      const requestBody = {
+        allergen: preferencesData.allergen || [],
+        additive: preferencesData.selectedAdditives || [],
+        diet: preferencesData.selectedDiets || [],
+        ingredient: preferencesData.selectedIngredients || [],
+        nutrition: preferencesData.selectedNutritions || [],
+      };
+  
+      console.log("🔹 Data being sent to server:", requestBody);
+  
       const response = await fetch("http://192.168.1.10:5001/preferences", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`, 
         },
-        body: JSON.stringify(preferences),
+        body: JSON.stringify(requestBody),
       });
   
       const data = await response.json();
+      console.log("🔹 Server Response:", data);
+  
       if (response.ok) {
         console.log("Preferences saved successfully:", data);
         alert("Preferences saved successfully!");
+        await AsyncStorage.setItem("userPreferences", JSON.stringify(preferencesData));  
+        navigation.navigate("Home");
       } else {
-        console.error("Error saving preferences:", data.message);
-        alert("Failed to save preferences.");
+        console.error("Failed to save preferences:", data.message);
+        alert("Failed to save preferences. Try again.");
       }
     } catch (error) {
-      console.error("Error:", error);
+      console.error("Error submitting preferences:", error);
       alert("Network error while saving preferences.");
     }
-  
-    navigation.navigate("Home");
   };
   
-
-
+  
+  
+  console.log("Received Data in PreferenceNutrition:", route.params);
+  
+  
+  
   // Icons for different categories
   const categories = [
     { key: 'Allergen', name: 'Allergen', icon: 'food-off' },

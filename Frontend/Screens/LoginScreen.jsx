@@ -9,7 +9,7 @@ import {
   Dimensions,
   Alert,
 } from "react-native";
-
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import Ionicons from "react-native-vector-icons/Ionicons";
 
 export default function LoginScreen({ navigation }) {
@@ -35,29 +35,46 @@ export default function LoginScreen({ navigation }) {
         }),
       });
   
-      // Check if the response is valid JSON
-      const text = await response.text();  // Read the raw response
-  
-      try {
-        const data = JSON.parse(text);  // Try to parse as JSON
-        
-        if (data.status === "ok") {
-          Alert.alert("Success", "You are logged in!");
-          navigation.navigate("Home");
-        } else {
-          Alert.alert("Error", data.message || "Invalid credentials");
-        }
-      } catch (parseError) {
-        Alert.alert("Error", "Invalid response from server");
-        console.error("Response was not JSON:", text);
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("Login error response:", errorText);
+        Alert.alert("Error", "Invalid credentials or server error.");
+        return;
       }
+  
+      const data = await response.json(); // Read response only ONCE
+      console.log("Login success:", data);
+  
+      // Save token
+      await AsyncStorage.setItem("authToken", data.token);
+  
+      // Fetch user preferences
+      const preferencesResponse = await fetch(`http://192.168.1.10:5001/user-preferences`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${data.token}`,
+        },
+      });
+  
+      if (!preferencesResponse.ok) {
+        console.error("Preferences fetch error");
+        Alert.alert("Error", "Could not fetch user preferences.");
+        return;
+      }
+  
+      const preferencesData = await preferencesResponse.json();
+      await AsyncStorage.setItem("userPreferences", JSON.stringify(preferencesData));
+  
+      Alert.alert("Success", "You are logged in!");
+      navigation.navigate("Home", { token: data.token, preferences: preferencesData });
+  
     } catch (error) {
-      Alert.alert("Error", "An error occurred while logging in.");
       console.error("Login error:", error);
+      Alert.alert("Error", "An error occurred while logging in.");
     }
   };
   
-
   return (
     <SafeAreaView style={styles.container}>
       <Text style={styles.title}>Log In</Text>

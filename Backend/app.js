@@ -2,6 +2,7 @@ const express=require("express");
 const app=express();
 const mongoose=require("mongoose");
 app.use(express.json());
+require("dotenv").config(); // Load .env file
 
 const mongoUrl="mongodb+srv://pfa2nd:QHJBuTHwoPLOWqVz@cluster0.jg69u.mongodb.net/AppData?retryWrites=true&w=majority&appName=Cluster0"
 
@@ -11,7 +12,9 @@ require("./models/Product")
 require("./models/BarcodeInfo")
 require("./models/Preference")
 
-app.use(require('./routes/authentication'))
+const { verifyToken } = require("./routes/authentication");
+const authRoutes = require("./routes/authentication"); // Correct import
+app.use(authRoutes); // ✅ Use it correctly
 app.use(require('./routes/specificcat'))
 app.use(require("./routes/products"))
 app.use(require("./routes/barcodeinfo"))

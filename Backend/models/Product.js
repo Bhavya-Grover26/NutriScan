@@ -12,4 +12,4 @@ const ProductSchema = new mongoose.Schema({
 });
 
 // Ensure it fetches from "product_classification" collection
-module.exports = mongoose.model("Product", ProductSchema, "product_classification");
+module.exports = mongoose.model("Product", ProductSchema, "product_classification2");

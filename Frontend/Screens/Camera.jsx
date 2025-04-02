@@ -163,7 +163,7 @@ const styles = StyleSheet.create({
         marginBottom: 20,
     },
     permissionButton: {
-        backgroundColor: "#1E90FF",
+        backgroundColor: "#1B623B",
         paddingVertical: 10,
         paddingHorizontal: 20,
         borderRadius: 10,
@@ -181,14 +181,15 @@ const styles = StyleSheet.create({
         fontSize: 18,
         textAlign: "center",
         borderRadius: 10,
-        marginVertical: 60,
+        marginVertical: 50,
         paddingHorizontal: 10,
     },
     scanButton: {
-        backgroundColor: "#1E90FF",
+        backgroundColor: "#1B623B",
         paddingVertical: 10,
-        paddingHorizontal: 20,
+        marginBottom: 100,
         borderRadius: 10,
+        paddingHorizontal: 60,
     },
 });
 

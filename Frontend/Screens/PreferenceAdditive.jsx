@@ -4,11 +4,13 @@ import Slider from '@react-native-community/slider';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import BottomNavBar from './BottomNavBar';
 import { useNavigation, useRoute } from '@react-navigation/native';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function PreferenceAdditive() {
   const route = useRoute();
   const navigation = useNavigation();
   const [selectedAdditives, setSelectedAdditives] = useState([]);
+  const { user, preferences = {} } = route.params || {};
   const [avoidanceLevel, setAvoidanceLevel] = useState(1);
 
   const Additives = ['Preservatives', 'MSG', 'Nitrates', 'Artificial Colors', 'Artificial Flavors', 'Sulfites'];
@@ -22,14 +24,25 @@ export default function PreferenceAdditive() {
   };
 
 
-  const handleApply = () => {
-    const preferences = {
-      ...route.params,
-      selectedAdditives,
-    };
-    navigation.navigate('PreferenceDiet', preferences);
+  const handleApply = async () => {
+    try {
+      const updatedPreferences = { 
+        ...preferences, 
+        selectedAdditives, 
+      };
+
+      // Save updated preferences locally
+      await AsyncStorage.setItem("userPreferences", JSON.stringify(updatedPreferences));
+
+      // Navigate to the next preference page
+      navigation.navigate('PreferenceDiet', { user, preferences: updatedPreferences });
+
+    } catch (error) {
+      console.error("Error saving preferences locally:", error);
+    }
   };
   console.log("Received Data in PreferenceAdditive:", route.params);
+
 
 
   const categories = [
