@@ -9,7 +9,9 @@ const HomeRoute = () => <Text style={styles.routeText}>Home</Text>;
 const RecentsRoute = () => <Text style={styles.routeText}>Recents</Text>;
 const BarcodeScanRoute = () => <Text style={styles.routeText}>Barcode Scan</Text>;
 const ChartRoute = () => <Text style={styles.routeText}>Chart</Text>;
+const UserRoute = () => <Text style={styles.routeText}>User</Text>;
 const CompareRoute = () => <Text style={styles.routeText}>Compare</Text>;
+
 
 const BottomNavBar = () => {
   const navigation = useNavigation();
@@ -21,7 +23,7 @@ const BottomNavBar = () => {
     { key: 'recents', title: 'Recents', focusedIcon: 'history' },
     { key: 'barcodeScan', title: 'Scan', focusedIcon: 'barcode-scan' },
     { key: 'compare', title: 'Compare', focusedIcon: 'compare-horizontal' },
-    { key: 'chart', title: 'Chart', focusedIcon: 'chart-bar' },
+    { key: 'user', title: 'User', focusedIcon: 'account' },
   ];
 
   const renderScene = BottomNavigation.SceneMap({
@@ -29,7 +31,8 @@ const BottomNavBar = () => {
     recents: RecentsRoute,
     barcodeScan: BarcodeScanRoute,
     compare: CompareRoute,
-    chart: ChartRoute,
+    user: UserRoute, // Add this line
+    
   });
 
   // Detect screen changes and update the active tab accordingly
@@ -38,7 +41,7 @@ const BottomNavBar = () => {
     else if (route.name === 'Recents') setIndex(1);
     else if (route.name === 'Scanner') setIndex(2);
     else if (route.name === 'Categories' || route.name === 'SpecificCategories') setIndex(3);
-    else if (route.name === 'Chart') setIndex(4);
+    else if (route.name === 'PreferenceAdditive'|| route.name === 'PreferenceDiet' || route.name === 'PreferenceAllergen' || route.name === 'PreferenceIngredient' || route.name === 'PreferenceNutrition' ) setIndex(4);
   }, [route.name]);
 
   const handleTabChange = (newIndex) => {
@@ -54,8 +57,8 @@ const BottomNavBar = () => {
       case 'compare':
         navigation.navigate('Categories');
         break;
-      case 'chart':
-        navigation.navigate('Chart');
+      case 'user':
+        navigation.navigate('PreferenceAdditive');
         break;
       default:
         break;
