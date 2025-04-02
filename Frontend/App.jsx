@@ -19,6 +19,7 @@ import PreferenceIngredient from './Screens/PreferenceIngredient';
 import PreferenceNutrition from './Screens/PreferenceNutrition';
 import Scanner from './Screens/Camera';
 import BarcodeScan1 from './Screens/BarcodeScan1';
+import UpdateUserScreen from './Screens/UserScreen'
 
 const Stack = createNativeStackNavigator();
 
@@ -117,6 +118,11 @@ export default function App() {
         <Stack.Screen
           name="BarcodeScan1"
           component={BarcodeScan1}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="UpdateUserScreen"
+          component={UpdateUserScreen}
           options={{ headerShown: false }}
         />
          

@@ -56,6 +56,7 @@ router.get("/products/:categories", async (req, res) => {
           image_url: product.image_url || "https://via.placeholder.com/150",
           brands: product.brands || "Unknown",
           Rank: product.Rank || 0,
+          _id: product._id
         }))
       );
     } catch (error) {

@@ -105,7 +105,7 @@ const styles = StyleSheet.create({
     marginTop: 4, // Added space between icon and text
   },
   activeCategoryText: {
-    color: '#2B7A0B', // White for active category text
+    color: '#1B623B', // White for active category text
   },
   icon: {
     marginBottom: 4, // Ensuring space between icon and button border

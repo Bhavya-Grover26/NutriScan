@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, TextInput, ScrollView, Image, TouchableOpacity, StyleSheet } from 'react-native';
 import { IconButton } from 'react-native-paper';
-import { useRoute } from '@react-navigation/native';
+import { useRoute , useNavigation} from '@react-navigation/native';
 import CategoryNavbar from './CategoryNavbar';
 import BottomNavBar from "./BottomNavBar";
 
@@ -10,7 +10,7 @@ const SpecificCategories = () => {
   const initialCategory = route.params?.category || ['bread'];
   console.log("Received categories:", initialCategory);
     const [selectedCategory, setSelectedCategory] = useState(initialCategory);
-
+    const navigation = useNavigation();
   const [categoryItems, setCategoryItems] = useState([]);
 
   // Fetch products when the selected category changes
@@ -38,6 +38,7 @@ const fetchCategoryProducts = async (categories) => {
     console.log('Fetching products from URL:', response.url); // Log the request URL
 
     const data = await response.json();
+    console.log("API Response:", JSON.stringify(data, null, 2));
 
     // Ensure data is an array
     if (!Array.isArray(data)) {
@@ -52,46 +53,51 @@ const fetchCategoryProducts = async (categories) => {
   }
 };
 
-  return (
-    <View style={styles.container}>
-      <View style={styles.navbar}>
-        {/* Pass the setSelectedCategory callback to CategoryNavbar */}
-        <CategoryNavbar
-          onCategorySelect={setSelectedCategory}
-          currentCategory={selectedCategory}
-        />
-      </View>
-
-      <View style={styles.contentWrapper}>
-        <View style={styles.uppercontent}></View>
-        <View style={styles.header}>
-          <IconButton icon="" size={24} onPress={() => {}} />
-          <Text style={styles.headerTitle}>Categories</Text>
-          <IconButton icon="" size={24} onPress={() => {}} />
-        </View>
-
-       
-
-        <View style={styles.maincontent}>
-          <ScrollView style={styles.listContainer}>
-            {categoryItems.map((item, index) => (
-              <View key={index} style={styles.breadItem}>
-                <Image style={styles.breadImage} source={{ uri: item.image_url }} />
-                <View style={styles.breadInfo}>
-                  <Text style={styles.breadTitle}>{item.product_name}</Text>
-                  <Text style={styles.breadBrand}>{item.brands}</Text>
-                </View>
-                <View style={styles.ratingContainer}>
-                  <Text style={styles.ratingText}>{item.Rank}</Text>
-                </View>
-              </View>
-            ))}
-          </ScrollView>
-        </View>
-      </View>
-      <BottomNavBar />
+return (
+  <View style={styles.container}>
+    <View style={styles.navbar}>
+      <CategoryNavbar 
+        onCategorySelect={setSelectedCategory} 
+        currentCategory={selectedCategory} 
+      />
     </View>
-  );
+
+    <View style={styles.contentWrapper}>
+      <View style={styles.uppercontent}></View>
+      <View style={styles.header}>
+        <IconButton icon="" size={24} onPress={() => {}} />
+        <Text style={styles.headerTitle}>Categories</Text>
+        <IconButton icon="" size={24} onPress={() => {}} />
+      </View>
+
+      <View style={styles.maincontent}>
+        <ScrollView style={styles.listContainer}>
+          {categoryItems.map((item, index) => (
+                <TouchableOpacity 
+                key={index} 
+                style={styles.breadItem}
+                onPress={() => {
+                  console.log("Navigating with barcode:", item._id); // Debugging
+                  navigation.navigate("BarcodeScan1", { barcode: item._id });
+                }}
+              >
+              <Image style={styles.breadImage} source={{ uri: item.image_url }} />
+              <View style={styles.breadInfo}>
+                <Text style={styles.breadTitle}>{item.product_name}</Text>
+                <Text style={styles.breadBrand}>{item.brands}</Text>
+              </View>
+              <View style={styles.ratingContainer}>
+                <Text style={styles.ratingText}>{item.Rank}</Text>
+              </View>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+      </View>
+    </View>
+
+    <BottomNavBar />
+  </View>
+);
 };
 
 
@@ -187,7 +193,7 @@ const styles = StyleSheet.create({
     color: '#666',
   },
   ratingContainer: {
-    backgroundColor: '#4CAF50',
+    backgroundColor: '#1B623B',
     borderRadius: 16,
     paddingVertical: 4,
     paddingHorizontal: 8,

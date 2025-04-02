@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, Alert, ActivityIndicator, TouchableOpacity, Tex
 import { Camera, useCameraDevices, useCodeScanner } from "react-native-vision-camera";
 import axios from "axios";
 import { useNavigation } from '@react-navigation/native';  // Import useNavigation
+import BottomNavBar from "./BottomNavBar";
 
 const Scanner = () => {
     const navigation = useNavigation();
@@ -121,6 +122,7 @@ const Scanner = () => {
             <TouchableOpacity onPress={() => checkBarcodeInDatabase(manualBarcode)} style={styles.scanButton}>
                 <Text style={styles.buttonText}>Submit</Text>
             </TouchableOpacity>
+             <BottomNavBar />
         </View>
     );
 };
@@ -179,7 +181,7 @@ const styles = StyleSheet.create({
         fontSize: 18,
         textAlign: "center",
         borderRadius: 10,
-        marginVertical: 10,
+        marginVertical: 60,
         paddingHorizontal: 10,
     },
     scanButton: {
