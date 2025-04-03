@@ -24,7 +24,7 @@ export default function LoginScreen({ navigation }) {
     }
   
     try {
-      const response = await fetch("http://192.168.1.10:5001/login", {
+      const response = await fetch("https://nutriscan-production.up.railway.app/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -49,7 +49,7 @@ export default function LoginScreen({ navigation }) {
       await AsyncStorage.setItem("authToken", data.token);
   
       // Fetch user preferences
-      const preferencesResponse = await fetch(`http://192.168.1.10:5001/user-preferences`, {
+      const preferencesResponse = await fetch(`https://nutriscan-production.up.railway.app/user-preferences`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",

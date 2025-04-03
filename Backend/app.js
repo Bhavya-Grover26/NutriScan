@@ -4,6 +4,10 @@ const mongoose=require("mongoose");
 app.use(express.json());
 require("dotenv").config(); // Load .env file
 
+const cors = require("cors");
+app.use(cors()); // Allow all origins
+
+
 const mongoUrl="mongodb+srv://pfa2nd:QHJBuTHwoPLOWqVz@cluster0.jg69u.mongodb.net/AppData?retryWrites=true&w=majority&appName=Cluster0"
 
 require('./models/UserDetails')

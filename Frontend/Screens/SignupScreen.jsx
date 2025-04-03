@@ -50,7 +50,7 @@ export default function SignupScreen({ navigation }) {
     const userData = { name, email, password, phone };
   
     try {
-      const response = await fetch("http://192.168.1.10:5001/register", {
+      const response = await fetch("https://nutriscan-production.up.railway.app/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(userData),

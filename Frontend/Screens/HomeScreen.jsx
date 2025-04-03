@@ -50,7 +50,7 @@ const HomeScreen = () => {
   
 
   useEffect(() => {
-    fetch("http://192.168.1.10:5001/products") 
+    fetch("https://nutriscan-production.up.railway.app/products") 
       .then((res) => res.json())
       .then((data) => {
         setProducts(data);
