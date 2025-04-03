@@ -27,7 +27,7 @@ function UserProfileScreen({ navigation }) {
         }
 
         // Fetch user details using the stored token
-        const userResponse = await fetch("http://192.168.1.10:5001/user-info", {
+        const userResponse = await fetch("https://nutriscan-production.up.railway.app/user-info", {
           method: "GET",
           headers: {
             "Content-Type": "application/json",

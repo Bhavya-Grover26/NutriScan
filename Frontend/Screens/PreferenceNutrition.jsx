@@ -51,7 +51,7 @@ export default function PreferenceNutrition() {
   
       console.log("🔹 Data being sent to server:", requestBody);
   
-      const response = await fetch("http://192.168.1.10:5001/preferences", {
+      const response = await fetch("https://nutriscan-production.up.railway.app/preferences", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
