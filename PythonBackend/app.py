@@ -1,12 +1,13 @@
 from flask import Flask, jsonify, request
+from flask_cors import CORS  # Import CORS
 from scanner import scan_barcode
 from db import collection1, collection2
 import logging
 
-logging.basicConfig(level=logging.DEBUG)  # Enable detailed logs
-
+logging.basicConfig(level=logging.DEBUG)
 
 app = Flask(__name__)
+CORS(app)  # Enable CORS for all routes
 
 @app.route("/check_barcode", methods=['GET'])
 def check_barcode():
