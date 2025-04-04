@@ -14,22 +14,16 @@ from flask import request, jsonify
 @app.route("/check_barcode", methods=['GET'])
 def check_barcode():
     try:
-        barcode = request.args.get("barcode", "").strip()
-        print(f"[INFO] Received request: /check_barcode?barcode={barcode}")
-
+        barcode = request.args.get("barcode")
+        print(f"Received request: /check_barcode?barcode={barcode}")
         if not barcode:
             return jsonify({"error": "Barcode is required"}), 400
 
-        if not barcode.isdigit():
-            return jsonify({"error": "Invalid barcode format"}), 400
-
-        product_exists = collection1.find_one({"_id": barcode}) is not None
-        print(f"[INFO] Barcode {barcode} exists: {product_exists}")
-
-        return jsonify({"exists": product_exists})
+        product = collection1.find_one({"_id": barcode})
+        return jsonify({"exists": bool(product)})
 
     except Exception as e:
-        print(f"[ERROR] Exception in /check_barcode: {str(e)}")
+        print(f"Error in /check_barcode: {str(e)}")  # Print error for debugging
         return jsonify({"error": "Internal server error"}), 500
 
 
