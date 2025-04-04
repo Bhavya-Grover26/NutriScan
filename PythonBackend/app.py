@@ -9,20 +9,29 @@ logging.basicConfig(level=logging.DEBUG)
 app = Flask(__name__)
 CORS(app)  # Enable CORS for all routes
 
+from flask import request, jsonify
+
 @app.route("/check_barcode", methods=['GET'])
 def check_barcode():
     try:
-        barcode = request.args.get("barcode")
-        print(f"Received request: /check_barcode?barcode={barcode}")
+        barcode = request.args.get("barcode", "").strip()
+        print(f"[INFO] Received request: /check_barcode?barcode={barcode}")
+
         if not barcode:
             return jsonify({"error": "Barcode is required"}), 400
 
-        product = collection1.find_one({"_id": barcode})
-        return jsonify({"exists": bool(product)})
+        if not barcode.isdigit():
+            return jsonify({"error": "Invalid barcode format"}), 400
+
+        product_exists = collection1.find_one({"_id": barcode}) is not None
+        print(f"[INFO] Barcode {barcode} exists: {product_exists}")
+
+        return jsonify({"exists": product_exists})
 
     except Exception as e:
-        print(f"Error in /check_barcode: {str(e)}")  # Print error for debugging
+        print(f"[ERROR] Exception in /check_barcode: {str(e)}")
         return jsonify({"error": "Internal server error"}), 500
+
 
 @app.route('/scan', methods=['GET'])
 def scan():
