@@ -34,7 +34,7 @@ const fetchCategoryProducts = async (categories) => {
     }
 
     // Fetch data from the API
-    const response = await fetch(`https://nutriscan-production.up.railway.app/${formattedCategories}`);
+    const response = await fetch(`https://nutriscan-production.up.railway.app/products/${formattedCategories}`);
     console.log('Fetching products from URL:', response.url); // Log the request URL
 
     const data = await response.json();

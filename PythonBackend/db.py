@@ -1,10 +1,6 @@
 import pymongo
-import os
 
-# Load MongoDB URI from Railway's environment variables
-MONGO_URI = os.getenv("MONGO_URI")
-
-client = pymongo.MongoClient(MONGO_URI)
+client = pymongo.MongoClient('mongodb+srv://pfa2nd:QHJBuTHwoPLOWqVz@cluster0.jg69u.mongodb.net/AppData?retryWrites=true&w=majority&appName=Cluster0')
 db = client['AppData']
 collection1 = db['product_classification']
 collection2 = db['product_comparison']
