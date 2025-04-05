@@ -59,7 +59,7 @@ const ProductDetailsScreen = () => {
     const fetchProductDetails = async () => {
       try {
         console.log("Fetching product details...");
-        const response = await fetch(`https://nutriscan-production.up.railway.app/${barcode}`);
+        const response = await fetch(`https://nutriscan-production.up.railway.app/product/${barcode}`);
         const data = await response.json();
         console.log("Product details fetched:", data);
         console.log("Received Final_Classification:", data.Final_Classification);
@@ -105,7 +105,7 @@ const ProductDetailsScreen = () => {
     const fetchSuggestedProducts = async () => {
       try {
         console.log("Fetching similar products...");
-        const response = await fetch(`http://192.168.1.10:5001/similar/${barcode}`);
+        const response = await fetch(`https://nutriscan-production.up.railway.app/similar/${barcode}`);
         const data = await response.json();
         console.log("Similar products fetched:", data);
   

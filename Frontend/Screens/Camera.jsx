@@ -18,18 +18,19 @@ const Scanner = () => {
 
     useEffect(() => {
         (async () => {
-            const status = await Camera.getCameraPermissionStatus();
-            if (status !== "authorized") {
-                const permission = await Camera.requestCameraPermission();
-                setCameraPermission(permission);
-                if (permission === "authorized") {
-                    setRefresh(prev => !prev);
-                }
-            } else {
-                setCameraPermission("authorized");
-            }
+          const status = await Camera.getCameraPermissionStatus();
+          console.log("Camera permission status:", status);
+      
+          if (status === "authorized") {
+            setCameraPermission("authorized");
+          } else {
+            const newStatus = await Camera.requestCameraPermission();
+            console.log("Requested camera permission:", newStatus);
+            setCameraPermission(newStatus);
+          }
         })();
-    }, []);
+      }, []);
+      
 
     const requestCameraPermission = async () => {
         const permission = await Camera.requestCameraPermission();
@@ -59,7 +60,7 @@ const Scanner = () => {
     const fetchProductDetails = async (barcode) => {
         setLoading(true);
         try {
-            const response = await axios.get(`http://192.168.0.112:5000/scan?barcode=${barcode}`);
+            const response = await axios.get(`https://nutriscan-production-f5ec.up.railway.app/scan?barcode=${barcode}`);
             Alert.alert("Product Details", JSON.stringify(response.data, null, 2));
         } catch (error) {
             Alert.alert("Error", "Failed to fetch product details");
@@ -75,18 +76,23 @@ const Scanner = () => {
 
       setLoading(true);
       try {
-          const response = await axios.get(`http://192.168.1.10:5000/check_barcode?barcode=${barcode}`);
-          console.log("API Response:", response.data); // Debugging
-
-          if (response.data.exists === true) {
-              navigation.navigate("BarcodeScan1", { barcode });
-          } else {
-              Alert.alert("Not Found", "The scanned barcode does not exist in our database.");
-          }
+        const response = await axios.get(`https://nutriscan-production-f5ec.up.railway.app/check_barcode?barcode=${barcode}`);
+        console.log("API Response:", response.data); // Debug
+      
+        if (response.data.exists === true) {
+          navigation.navigate("BarcodeScan1", { barcode });
+        } else {
+          Alert.alert("Not Found", "The scanned barcode does not exist in our database.");
+        }
       } catch (error) {
-          console.error("API Error:", error.response ? error.response.data : error.message);
-          Alert.alert("Error", "Failed to check barcode.");
+        if (error.response) {
+          console.error("API Error Response:", error.response.status, error.response.data);
+        } else {
+          console.error("API Error:", error.message);
+        }
+        Alert.alert("Error", "Failed to check barcode.");
       }
+      
       setLoading(false);
   };
 
