@@ -1,6 +1,14 @@
 import cv2
 from pyzbar.pyzbar import decode
 
+def scan_barcode_from_image(image_path):
+    image = cv2.imread(image_path)
+    decoded_objects = decode(image)
+    for obj in decoded_objects:
+        return obj.data.decode("utf-8").strip()
+    return None
+
+
 def scan_barcode():
     cap = cv2.VideoCapture(0)  # Open the camera
     while True:
