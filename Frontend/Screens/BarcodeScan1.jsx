@@ -287,6 +287,41 @@ const ProductDetailsScreen = () => {
 
     {/* Show unwanted additives based on user preferences */}
 {/* Show unwanted additives based on user preferences */}
+{/* Show unwanted additives based on user preferences */}
+{(() => {
+  const detectedAdditives = [];
+
+  // Check each additive category
+  preferences?.selectedAdditives?.forEach((userSelectedAdditive) => {
+    if (additives[userSelectedAdditive]) {
+      const matchedAdditives = product.additives_tags
+        .map((additive) => additive.replace("en:", "").toUpperCase())
+        .filter((code) => additives[userSelectedAdditive].has(code));
+
+      if (matchedAdditives.length > 0) {
+        detectedAdditives.push({
+          category: userSelectedAdditive,
+          codes: matchedAdditives,
+        });
+      }
+    }
+  });
+
+  if (detectedAdditives.length > 0) {
+    return (
+      <View style={styles.additivesWarning}>
+        <Text style={styles.additivesText}>⚠️ <Text style={{ fontWeight: "bold", fontStyle: "italic" }}>Detected Additives:</Text></Text>
+        {detectedAdditives.map((item, index) => (
+          <Text key={index} style={styles.additivesDetails}>
+            {item.category}: {item.codes.join(", ")}
+          </Text>
+        ))}
+      </View>
+    );
+  }
+  return null;
+})()}
+
 {(() => {
   const detectedAllergens = product.ingredients_text
     .split(/\s+/)
@@ -405,24 +440,39 @@ const ProductDetailsScreen = () => {
 
         {/* Suggested Products */}
         <View style={styles.suggestedSection}>
-          <Text style={styles.suggestedTitle}>Compare Products</Text>
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.suggestedList}
-          >
-            {suggestedProducts.map((item, index) => (
-              <TouchableOpacity
-                key={index}
-                style={styles.suggestedItem}
-                onPress={() => navigation.navigate("Compare", { originalProduct: product, comparedProduct: item })}
-              >
-                <Image source={{ uri: item.image_url }} style={styles.suggestedImage} />
-                <Text style={styles.suggestedText}>{item.product_name}</Text>
-              </TouchableOpacity>
-            ))}
-          </ScrollView>
-        </View>
+  <Text style={styles.suggestedTitle}>Compare Products</Text>
+  {suggestedProducts.length > 0 ? (
+    <ScrollView
+      horizontal
+      showsHorizontalScrollIndicator={false}
+      contentContainerStyle={styles.suggestedList}
+    >
+      {suggestedProducts.map((item, index) => (
+        <TouchableOpacity
+          key={index}
+          style={styles.suggestedItem}
+          onPress={() =>
+            navigation.navigate("Compare", {
+              originalProduct: product,
+              comparedProduct: item,
+            })
+          }
+        >
+          <Image
+            source={{ uri: item.image_url }}
+            style={styles.suggestedImage}
+          />
+          <Text style={styles.suggestedText}>{item.product_name}</Text>
+        </TouchableOpacity>
+      ))}
+    </ScrollView>
+  ) : (
+    <Text style={styles.noProductsText}>
+      Sorry, no products to be compared in this category :(
+    </Text>
+  )}
+</View>
+
 
 
 
@@ -663,6 +713,32 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 16,
   },
+  additivesWarning: {
+    backgroundColor: "#DFFFD6",  // Light Green Box
+    padding: 10,
+    borderRadius: 10,
+    marginTop: 10,
+    borderWidth: 1,
+    borderColor: "#8FBC8F",  // Darker Green Border
+  },
+  additivesText: {
+    color: "#2F6627", // Dark Green Text
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  additivesDetails: {
+    color: "#2F6627", 
+    fontSize: 14,
+    marginLeft: 5,
+  },
+  noProductsText: {
+    fontSize: 20,
+    color: "gray",
+    marginTop: 10,
+    paddingHorizontal: 10,
+    fontStyle: "italic",
+  },
+  
   
   
 });

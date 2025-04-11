@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
     View,
     Text,
@@ -10,11 +10,19 @@ import {
 } from "react-native";
 
 export default function SplashScreen({ navigation }) {
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            navigation.navigate("Onboard1");
+        }, 5000); // 5 seconds
+
+        return () => clearTimeout(timer); // Cleanup on unmount
+    }, [navigation]);
+
     return (
         <SafeAreaView style={styles.container}>
             <View style={styles.imageContainer}>
                 <Image
-                    source={require("../Assets/nutriscan_splash.png")} 
+                    source={require("../Assets/nutriscan_splash1.png")} 
                     style={styles.image}
                 />
             </View>
@@ -32,7 +40,7 @@ const { width, height } = Dimensions.get("window");
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: "#204129",
+        backgroundColor: "#1B623B",
         justifyContent: "center",
         alignItems: "center",
     },

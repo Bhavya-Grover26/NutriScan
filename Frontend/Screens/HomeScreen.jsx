@@ -140,8 +140,8 @@ const HomeScreen = () => {
 
   <View style={styles.row}>
     <View style={styles.infoBox}>
-      <Text style={styles.infoTitle}>Eco-Score</Text>
-      <Text style={styles.infoText}>Shows environmental impact of food products.</Text>
+      <Text style={styles.infoTitle}>Rank</Text>
+      <Text style={styles.infoText}>Shows the rank of product in it's own category.</Text>
     </View>
     <View style={styles.infoBox}>
       <Text style={styles.infoTitle}>Scan Product</Text>
