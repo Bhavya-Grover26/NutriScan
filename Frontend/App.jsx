@@ -21,6 +21,7 @@ import Scanner from './Screens/Camera';
 import BarcodeScan1 from './Screens/BarcodeScan1';
 import UpdateUserScreen from './Screens/UserScreen'
 import SplashScreen from './Screens/SplashScreen';
+import SearchResults from './Screens/SearchResult';
 
 const Stack = createNativeStackNavigator();
 
@@ -95,6 +96,11 @@ export default function App() {
         <Stack.Screen
           name="Home"
           component={HomeScreen}
+          options={{ headerShown: false }}
+        />
+         <Stack.Screen
+          name="SearchResults"
+          component={SearchResults}
           options={{ headerShown: false }}
         />
         <Stack.Screen
