@@ -20,6 +20,7 @@ import PreferenceNutrition from './Screens/PreferenceNutrition';
 import Scanner from './Screens/Camera';
 import BarcodeScan1 from './Screens/BarcodeScan1';
 import UpdateUserScreen from './Screens/UserScreen'
+import trycamera from './Screens/Cameratry';
 
 const Stack = createNativeStackNavigator();
 
@@ -27,6 +28,7 @@ export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator>
+    
         <Stack.Screen
           name="Onboard1"
           component={Onboarding1}
