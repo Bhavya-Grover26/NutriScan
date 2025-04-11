@@ -15,6 +15,7 @@ require('./models/SpecificCategory')
 require("./models/Product")
 require("./models/BarcodeInfo")
 require("./models/Preference")
+require('./models/Search')
 
 const { verifyToken } = require("./routes/authentication");
 const authRoutes = require("./routes/authentication"); // Correct import
@@ -23,6 +24,7 @@ app.use(require('./routes/specificcat'))
 app.use(require("./routes/products"))
 app.use(require("./routes/barcodeinfo"))
 app.use(require("./routes/preference"))
+app.use(require('./routes/search'))
 
 app.get("/",(req,res)=>{
   res.send({status:"Started"})
