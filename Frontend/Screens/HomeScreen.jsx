@@ -71,12 +71,20 @@ const HomeScreen = () => {
       <ScrollView contentContainerStyle={styles.scrollContent}>
         {/* Header Section */}
         <View style={styles.header}>
-          <TextInput 
-            style={styles.searchInput} 
-            placeholder="Search" 
-            value={search} 
-            onChangeText={(text) => setSearch(text)}
-          />
+        <TextInput 
+  style={styles.searchInput} 
+  placeholder="Search" 
+  value={search} 
+  onChangeText={(text) => setSearch(text)}
+  onSubmitEditing={() => {
+    if (search.trim() !== "") {
+      navigation.navigate("SearchResults", { searchQuery: search.trim() });
+      setSearch(""); // Optional: Clear the search box after navigating
+    }
+  }}
+  returnKeyType="search"
+/>
+
           <Text style={styles.greeting}>Good Morning</Text>
         </View>
 
