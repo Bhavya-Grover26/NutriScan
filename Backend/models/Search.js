@@ -14,4 +14,4 @@ const searchSchema = new mongoose.Schema({
   // Add other fields if needed
 });
 
-module.exports = mongoose.model("Search", searchSchema, product_classification2);
+module.exports = mongoose.model("Search", searchSchema, "product_classification2");
