@@ -1,15 +1,16 @@
 from flask import Flask, jsonify, request
-from flask_cors import CORS  # Import CORS
-from scanner import scan_barcode
-from db import collection1, collection2
+from flask_cors import CORS
+from scanner import scan_barcode_from_image
+from db import collection1
 import logging
+import tempfile
+import os
+from werkzeug.utils import secure_filename
 
 logging.basicConfig(level=logging.DEBUG)
 
 app = Flask(__name__)
-CORS(app)  # Enable CORS for all routes
-
-from flask import request, jsonify
+CORS(app)
 
 @app.route("/check_barcode", methods=['GET'])
 def check_barcode():
@@ -23,32 +24,46 @@ def check_barcode():
         return jsonify({"exists": bool(product)})
 
     except Exception as e:
-        print(f"Error in /check_barcode: {str(e)}")  # Print error for debugging
+        print(f"Error in /check_barcode: {str(e)}")
         return jsonify({"error": "Internal server error"}), 500
 
 
-@app.route('/scan', methods=['GET'])
+@app.route("/scan", methods=['GET'])
 def scan():
     barcode = request.args.get('barcode')
     if not barcode:
-        response = jsonify({"error": "No barcode provided"})
-        print("Response:", response.get_json())  # Debugging
-        return response, 400
+        return jsonify({"error": "No barcode provided"}), 400
 
     product = collection1.find_one({"_id": barcode})
     if not product:
-        response = jsonify({"message": "Product not found"})
-        print("Response:", response.get_json())  # Debugging
-        return response, 404
+        return jsonify({"message": "Product not found"}), 404
 
-    response = jsonify({
+    return jsonify({
         "barcode": barcode,
         "product_name": product.get("product_name", "N/A"),
         "brand": product.get("brands", "N/A"),
         "classification": product.get("classification", "N/A"),
     })
-    print("Response:", response.get_json())  # Debugging
-    return response
+
+
+@app.route("/upload_image", methods=["POST"])
+def upload_image():
+    if "image" not in request.files:
+        return jsonify({"error": "No image uploaded"}), 400
+
+    image_file = request.files["image"]
+    if image_file.filename == "":
+        return jsonify({"error": "Empty file name"}), 400
+
+    filename = secure_filename(image_file.filename)
+    temp_path = os.path.join(tempfile.gettempdir(), filename)
+    image_file.save(temp_path)
+
+    barcode = scan_barcode_from_image(temp_path)
+    if barcode:
+        return jsonify({"barcode": barcode})
+    else:
+        return jsonify({"error": "No barcode detected"}), 404
 
 
 if __name__ == '__main__':
