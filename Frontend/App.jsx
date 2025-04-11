@@ -20,7 +20,7 @@ import PreferenceNutrition from './Screens/PreferenceNutrition';
 import Scanner from './Screens/Camera';
 import BarcodeScan1 from './Screens/BarcodeScan1';
 import UpdateUserScreen from './Screens/UserScreen'
-import trycamera from './Screens/Cameratry';
+import SplashScreen from './Screens/SplashScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -29,6 +29,11 @@ export default function App() {
     <NavigationContainer>
       <Stack.Navigator>
     
+        <Stack.Screen
+          name="SplashScreen"
+          component={SplashScreen}
+          options={{ headerShown: false }}
+        />
         <Stack.Screen
           name="Onboard1"
           component={Onboarding1}
