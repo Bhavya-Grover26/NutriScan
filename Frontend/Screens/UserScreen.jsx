@@ -132,53 +132,61 @@ function UserProfileScreen({ navigation }) {
   );
 
   return (
-    <SafeAreaView style={styles.container}>
-      <Text style={styles.title}>User Profile</Text>
-      <ScrollView style={styles.whiteCard}>
-        {userData ? (
-          <>
-            <Text style={styles.userInfo}>
-              <Ionicons name="person" size={18} color="#2E7D32" />{" "}
-              <Text style={styles.boldText}>Name:</Text> {userData.name}
-            </Text>
-            <Text style={styles.userInfo}>
-              <Ionicons name="mail" size={18} color="#2E7D32" />{" "}
-              <Text style={styles.boldText}>Email:</Text> {userData.email}
-            </Text>
-          </>
-        ) : (
-          <Text style={styles.loadingText}>Loading user details...</Text>
-        )}
+<SafeAreaView style={styles.container}>
+  <Text style={styles.title}>User Profile</Text>
 
-        <TouchableOpacity
-          onPress={() => setIsEditing(!isEditing)}
-          style={[styles.logoutButton, { backgroundColor: isEditing ? "#4CAF50" : "#1B623B" }]}
-        >
-          <Ionicons name={isEditing ? "checkmark" : "create-outline"} size={20} color="white" />
-          <Text style={styles.logoutButtonText}>
-            {isEditing ? "Save Changes" : "Edit Preferences"}
+  <ScrollView contentContainerStyle={styles.scrollContent}>
+    <View style={styles.whiteCard}>
+      {userData ? (
+        <>
+          <Text style={styles.userInfo}>
+            <Ionicons name="person" size={18} color="#2E7D32" />{" "}
+            <Text style={styles.boldText}>Name:</Text> {userData.name}
           </Text>
-        </TouchableOpacity>
+          <Text style={styles.userInfo}>
+            <Ionicons name="mail" size={18} color="#2E7D32" />{" "}
+            <Text style={styles.boldText}>Email:</Text> {userData.email}
+          </Text>
+        </>
+      ) : (
+        <Text style={styles.loadingText}>Loading user details...</Text>
+      )}
 
-        {preferences ? (
-          <>
-            {renderEditableSection("Allergens", "allergen")}
-            {renderEditableSection("Diet", "selectedDiets")}
-            {renderEditableSection("Selected Additives", "selectedAdditives")}
-            {renderEditableSection("Ingredients Avoided", "selectedIngredients")}
-          </>
-        ) : (
-          <Text style={styles.loadingText}>Loading preferences...</Text>
-        )}
+      <TouchableOpacity
+        onPress={() => setIsEditing(!isEditing)}
+        style={[styles.logoutButton, { backgroundColor: isEditing ? "#4CAF50" : "#1B623B" }]}
+      >
+        <Ionicons name={isEditing ? "checkmark" : "create-outline"} size={20} color="white" />
+        <Text style={styles.logoutButtonText}>
+          {isEditing ? "Save Changes" : "Edit Preferences"}
+        </Text>
+      </TouchableOpacity>
 
-        <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-          <Ionicons name="log-out-outline" size={20} color="white" />
-          <Text style={styles.logoutButtonText}>Logout</Text>
-        </TouchableOpacity>
-      </ScrollView>
+      {preferences ? (
+        <>
+          {renderEditableSection("Allergens", "allergen")}
+          {renderEditableSection("Diet", "selectedDiets")}
+          {renderEditableSection("Selected Additives", "selectedAdditives")}
+          {renderEditableSection("Ingredients Avoided", "selectedIngredients")}
+        </>
+      ) : (
+        <Text style={styles.loadingText}>Loading preferences...</Text>
+      )}
+    </View>
+  </ScrollView>
 
-      <BottomNavBar />
-    </SafeAreaView>
+  {/* 🔓 Logout button fixed just above BottomNavBar */}
+  <View style={styles.logoutContainer}>
+    <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+      <Ionicons name="log-out-outline" size={20} color="white" />
+      <Text style={styles.logoutButtonText}>Logout</Text>
+    </TouchableOpacity>
+  </View>
+
+  <BottomNavBar />
+</SafeAreaView>
+
+
   );
 }
 
@@ -270,6 +278,16 @@ const styles = StyleSheet.create({
     padding: 4,
     marginRight: 10,
   },
+  scrollContent: {
+    paddingBottom: 180, // give room for logout + bottom nav
+  },
+  logoutContainer: {
+    position: "absolute",
+    bottom: 70,
+    width: "100%",
+    paddingHorizontal: 20,
+  },
+  
 });
 
 export default UserProfileScreen;
