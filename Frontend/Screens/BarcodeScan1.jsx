@@ -181,35 +181,7 @@ const ProductDetailsScreen = () => {
     'Artificial Flavors': new Set(['E620', 'E621', 'E622', 'E623', 'E624', 'E625', 'E627', 'E631', 'E635']),
     'Sulfites': new Set(['E220', 'E221', 'E222', 'E223', 'E224', 'E226', 'E227'])
   };
-/*
-  const saveScanToHistory = async () => {
-    try {
 
-      const keys = await AsyncStorage.getAllKeys();
-      console.log("Stored keys in AsyncStorage:", keys);
-           
-      console.log("Fetching product details...");
-        const response = await fetch(`https://nutriscan-production.up.railway.app/product/${barcode}`);
-        const data = await response.json();
-        console.log("Product details fetched:", data);
-      const storedToken = await AsyncStorage.getItem("authToken");
-      console.log("🔹 Retrieved Token:", storedToken);
-      const response2 = await axios.post("http://192.168.1.9:5001/history", {
-        scanned_product_id: barcode,
-        nutrient_levels_tags: product.nutrient_levels_tags || [],
-      },
-      console.log("Payload:", {
-        scanned_product_id: barcode,
-        nutrient_levels_tags: product.nutrient_levels_tags || [],
-      }),
-      console.log("API Response:", response2.data),
-      alert("Product saved to history!"););
-    } catch (error) {
-      console.error("Save failed:", error.response2?.data || error.message);
-      alert("Failed to save product.");
-    }
-  };
- */
 
   const saveScanToHistory = async () => {
     try {
@@ -231,7 +203,7 @@ const ProductDetailsScreen = () => {
   
       console.log("Payload:", payload);
   
-      const response2 = await axios.post("http://192.168.1.9:5001/history", payload, {
+      const response2 = await axios.post("https://nutriscan-production.up.railway.app/history", payload, {
         headers: {
           Authorization: `Bearer ${storedToken}`,
         },

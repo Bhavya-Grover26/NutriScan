@@ -37,7 +37,7 @@ const ProductHistory = () => {
         return;
       }
 
-      const response = await axios.get("http://192.168.1.9:5001/history", {
+      const response = await axios.get("https://nutriscan-production.up.railway.app/history", {
         headers: { Authorization: `Bearer ${token}` },
       });
 
