@@ -16,15 +16,17 @@ require("./models/Product")
 require("./models/BarcodeInfo")
 require("./models/Preference")
 require('./models/Search')
+require('./models/ProductHistory')
 
 const { verifyToken } = require("./routes/authentication");
 const authRoutes = require("./routes/authentication"); // Correct import
-app.use(authRoutes); // ✅ Use it correctly
+app.use(authRoutes); //  Use it correctly
 app.use(require('./routes/specificcat'))
 app.use(require("./routes/products"))
 app.use(require("./routes/barcodeinfo"))
 app.use(require("./routes/preference"))
 app.use(require('./routes/search'))
+app.use(require('./routes/producthistory'))
 
 app.get("/",(req,res)=>{
   res.send({status:"Started"})
