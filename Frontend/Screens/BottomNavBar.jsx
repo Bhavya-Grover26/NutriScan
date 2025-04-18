@@ -9,6 +9,7 @@ const HomeRoute = () => <Text style={styles.routeText}>Home</Text>;
 const BarcodeScanRoute = () => <Text style={styles.routeText}>Barcode Scan</Text>;
 const UserRoute = () => <Text style={styles.routeText}>User</Text>;
 const CompareRoute = () => <Text style={styles.routeText}>Compare</Text>;
+const HistoryRoute = () => <Text style={styles.routeText}>ProductHistory</Text>;
 
 
 const BottomNavBar = () => {
@@ -20,6 +21,7 @@ const BottomNavBar = () => {
     { key: 'home', title: 'Home', focusedIcon: 'home' },
     { key: 'barcodeScan', title: 'Scan', focusedIcon: 'barcode-scan' },
     { key: 'compare', title: 'Compare', focusedIcon: 'compare-horizontal' },
+    { key: 'history', title: 'History', focusedIcon: 'history' },
     { key: 'user', title: 'User', focusedIcon: 'account' },
   ];
 
@@ -27,6 +29,7 @@ const BottomNavBar = () => {
     home: HomeRoute,
     barcodeScan: BarcodeScanRoute,
     compare: CompareRoute,
+    history: HistoryRoute, // Add this line
     user: UserRoute, // Add this line
     
   });
@@ -36,7 +39,8 @@ const BottomNavBar = () => {
     if (route.name === 'Home') setIndex(0);
     else if (route.name === 'Scanner') setIndex(1);
     else if (route.name === 'Categories' || route.name === 'SpecificCategories') setIndex(2);
-    else if (route.name === 'UpdateUserScreen') setIndex(3);
+    else if (route.name === 'UpdateUserScreen') setIndex(4);
+    else if (route.name === 'ProductHistory') setIndex(3);
   }, [route.name]);
 
   const handleTabChange = (newIndex) => {
@@ -51,6 +55,9 @@ const BottomNavBar = () => {
         break;
       case 'compare':
         navigation.navigate('Categories');
+        break;
+      case 'history':
+          navigation.navigate('ProductHistory');
         break;
       case 'user':
         navigation.navigate('UpdateUserScreen');

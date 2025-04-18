@@ -22,6 +22,7 @@ import BarcodeScan1 from './Screens/BarcodeScan1';
 import UpdateUserScreen from './Screens/UserScreen'
 import SplashScreen from './Screens/SplashScreen';
 import SearchResults from './Screens/SearchResult';
+import ProductHisotry from './Screens/ProductHistory';
 
 const Stack = createNativeStackNavigator();
 
@@ -136,6 +137,11 @@ export default function App() {
         <Stack.Screen
           name="UpdateUserScreen"
           component={UpdateUserScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="ProductHistory"
+          component={ProductHisotry}
           options={{ headerShown: false }}
         />
          

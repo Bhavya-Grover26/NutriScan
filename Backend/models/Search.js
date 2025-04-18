@@ -15,3 +15,4 @@ const searchSchema = new mongoose.Schema({
 });
 
 module.exports = mongoose.model("Search", searchSchema, "product_classification2");
+

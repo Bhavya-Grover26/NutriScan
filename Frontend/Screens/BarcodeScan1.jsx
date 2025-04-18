@@ -5,6 +5,7 @@ import BottomNavBar from "./BottomNavBar";
 import { useRoute } from "@react-navigation/native";
 import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage"; // Import AsyncStorage
+import axios from "axios";
 
 
 const ProductDetailsScreen = () => {
@@ -180,6 +181,70 @@ const ProductDetailsScreen = () => {
     'Artificial Flavors': new Set(['E620', 'E621', 'E622', 'E623', 'E624', 'E625', 'E627', 'E631', 'E635']),
     'Sulfites': new Set(['E220', 'E221', 'E222', 'E223', 'E224', 'E226', 'E227'])
   };
+/*
+  const saveScanToHistory = async () => {
+    try {
+
+      const keys = await AsyncStorage.getAllKeys();
+      console.log("Stored keys in AsyncStorage:", keys);
+           
+      console.log("Fetching product details...");
+        const response = await fetch(`https://nutriscan-production.up.railway.app/product/${barcode}`);
+        const data = await response.json();
+        console.log("Product details fetched:", data);
+      const storedToken = await AsyncStorage.getItem("authToken");
+      console.log("🔹 Retrieved Token:", storedToken);
+      const response2 = await axios.post("http://192.168.1.9:5001/history", {
+        scanned_product_id: barcode,
+        nutrient_levels_tags: product.nutrient_levels_tags || [],
+      },
+      console.log("Payload:", {
+        scanned_product_id: barcode,
+        nutrient_levels_tags: product.nutrient_levels_tags || [],
+      }),
+      console.log("API Response:", response2.data),
+      alert("Product saved to history!"););
+    } catch (error) {
+      console.error("Save failed:", error.response2?.data || error.message);
+      alert("Failed to save product.");
+    }
+  };
+ */
+
+  const saveScanToHistory = async () => {
+    try {
+      const keys = await AsyncStorage.getAllKeys();
+      console.log("Stored keys in AsyncStorage:", keys);
+  
+      console.log("Fetching product details...");
+      const response = await fetch(`https://nutriscan-production.up.railway.app/product/${barcode}`);
+      const data = await response.json();
+      console.log("Product details fetched:", data);
+  
+      const storedToken = await AsyncStorage.getItem("authToken");
+      console.log("🔹 Retrieved Token:", storedToken);
+  
+      const payload = {
+        scanned_product_id: barcode,
+        nutrient_levels_tags: product.nutrient_levels_tags || [],
+      };
+  
+      console.log("Payload:", payload);
+  
+      const response2 = await axios.post("http://192.168.1.9:5001/history", payload, {
+        headers: {
+          Authorization: `Bearer ${storedToken}`,
+        },
+      });
+  
+      console.log("API Response:", response2.data);
+      alert("Product saved to history!");
+    } catch (error) {
+      console.error("Save failed:", error.response?.data || error.message);
+      alert("Failed to save product.");
+    }
+  };
+  
   
   
 
@@ -230,9 +295,19 @@ const ProductDetailsScreen = () => {
             {/* Badges */}
             <View style={styles.badgeContainer}>
               <View style={styles.scoreBadge}>
-                <Text style={styles.scoreText}>Rank:{product.rank}</Text>
-              </View>
-            </View>
+                <Text style={styles.scoreText}>Rank: {product.rank}</Text>
+  </View>
+  {/*<TouchableOpacity onPress={() => console.log("Save product pressed")}>*/}
+  <IconButton
+    icon="bookmark" // or "bookmark" if you want filled
+    size={24}
+    iconColor="#C21807"
+    onPress={saveScanToHistory}
+    style={styles.iconButton}
+  />
+   {/*</TouchableOpacity>*/}
+</View>
+
           </View>
         </View>
 
@@ -737,6 +812,9 @@ const styles = StyleSheet.create({
     marginTop: 10,
     paddingHorizontal: 10,
     fontStyle: "italic",
+  },
+  saveIcon: {
+    marginLeft: 50,
   },
   
   
