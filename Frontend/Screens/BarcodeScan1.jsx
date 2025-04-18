@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Image } from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Image , ActivityIndicator} from "react-native";
 import { IconButton } from "react-native-paper";
 import BottomNavBar from "./BottomNavBar";
 import { useRoute } from "@react-navigation/native";
@@ -223,8 +223,9 @@ const ProductDetailsScreen = () => {
   if (!product) {
     return (
       <View style={styles.loadingContainer}>
-        <Text>Loading product details...</Text>
-      </View>
+  <ActivityIndicator size="large" color="#1B623B" style={{ marginBottom: 10 }} />
+  <Text style={styles.loadingText}>Loading product details...</Text>
+</View>
     );
   }
 
@@ -465,25 +466,40 @@ const ProductDetailsScreen = () => {
 
 
         {/* Nutrition Info */}
-        {activeTab === "Nutrition" && (
-          <View style={styles.infocontainer}>
-            <Text style={styles.sectionTitle}>Nutritional Information:</Text>
-            {product.nutrient_levels_tags.map((tag, index) => {
-              let color = "green"; // Default color for "low"
-              if (tag.includes("high")) {
-                color = "#C21807";
-              } else if (tag.includes("moderate")) {
-                color = "#FFD300";
-              }
-              return (
-                <View key={index} style={{ flexDirection: "row", alignItems: "center", marginVertical: 2 }}>
-                  <View style={[styles.dot, { backgroundColor: color }]} />
-                  <Text>{tag.replace("en:", "").replace("-", " ")}</Text>
-                </View>
-              );
-            })}
+       {/* Nutrition Info */}
+{activeTab === "Nutrition" && (
+  <View style={styles.infocontainer}>
+    <Text style={styles.sectionTitle}>Nutritional Information:</Text>
+    
+    {product.nutrient_levels_tags && product.nutrient_levels_tags.length > 0 ? (
+      product.nutrient_levels_tags.map((tag, index) => {
+        let color = "green"; // Default color for "low"
+        if (tag.includes("high")) {
+          color = "#C21807";
+        } else if (tag.includes("moderate")) {
+          color = "#FFD300";
+        }
+        return (
+          <View
+            key={index}
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              marginVertical: 2,
+            }}
+          >
+            <View style={[styles.dot, { backgroundColor: color }]} />
+            <Text>{tag.replace("en:", "").replace(/-/g, " ")}</Text>
           </View>
-        )}
+        );
+      })
+    ) : (
+      <Text style={{ marginTop: 5, fontStyle: 'italic', color: '#888' }}>
+        Sorry, nutritional information for this product doesn’t exist in our database :(
+      </Text>
+    )}
+  </View>
+)}
 
         {/* Suggested Products */}
         <View style={styles.suggestedSection}>
@@ -788,7 +804,17 @@ const styles = StyleSheet.create({
   saveIcon: {
     marginLeft: 50,
   },
-  
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  loadingText: {
+    fontSize: 16,
+    color: '#333',
+    textAlign: 'center',
+  },
   
   
 });
