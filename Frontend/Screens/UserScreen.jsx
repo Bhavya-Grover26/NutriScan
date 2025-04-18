@@ -7,6 +7,7 @@ import {
   SafeAreaView,
   ScrollView,
   Alert,
+  TextInput,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Ionicons from "react-native-vector-icons/Ionicons";
@@ -15,6 +16,9 @@ import BottomNavBar from "./BottomNavBar";
 function UserProfileScreen({ navigation }) {
   const [userData, setUserData] = useState(null);
   const [preferences, setPreferences] = useState(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [newEntry, setNewEntry] = useState("");
+  const [editKey, setEditKey] = useState("");
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -26,7 +30,6 @@ function UserProfileScreen({ navigation }) {
           return;
         }
 
-        // Fetch user details using the stored token
         const userResponse = await fetch("https://nutriscan-production.up.railway.app/user-info", {
           method: "GET",
           headers: {
@@ -44,7 +47,6 @@ function UserProfileScreen({ navigation }) {
         const userInfo = await userResponse.json();
         setUserData(userInfo);
 
-        // Retrieve stored preferences from AsyncStorage
         const storedPreferences = await AsyncStorage.getItem("userPreferences");
         if (storedPreferences) {
           setPreferences(JSON.parse(storedPreferences));
@@ -58,16 +60,76 @@ function UserProfileScreen({ navigation }) {
     fetchUserData();
   }, []);
 
-  // Logout Function
+  useEffect(() => {
+    if (!isEditing && preferences) {
+      AsyncStorage.setItem("userPreferences", JSON.stringify(preferences));
+    }
+  }, [isEditing]);
+
   const handleLogout = async () => {
     try {
-      await AsyncStorage.removeItem("authToken"); // Remove token
-      navigation.replace("Login"); // Navigate to Login screen
+      await AsyncStorage.removeItem("authToken");
+      navigation.replace("Login");
     } catch (error) {
       console.error("Logout error:", error);
       Alert.alert("Error", "Failed to log out. Please try again.");
     }
   };
+
+  const handleRemove = (key, value) => {
+    const updated = preferences[key].filter((item) => item !== value);
+    setPreferences({ ...preferences, [key]: updated });
+  };
+
+  const handleAdd = () => {
+    if (newEntry && editKey) {
+      const updated = [...preferences[editKey], newEntry.trim()];
+      setPreferences({ ...preferences, [editKey]: updated });
+      setNewEntry("");
+      setEditKey("");
+    }
+  };
+
+  const renderEditableSection = (title, key) => (
+    <View>
+      <Text style={styles.sectionTitle}>{title}</Text>
+      {preferences[key].length > 0 ? (
+        preferences[key].map((item, index) => (
+          <View key={index} style={styles.chip}>
+            <Text>{item}</Text>
+            {isEditing && (
+              <TouchableOpacity onPress={() => handleRemove(key, item)}>
+                <Text style={styles.removeIcon}>❌</Text>
+              </TouchableOpacity>
+            )}
+          </View>
+        ))
+      ) : (
+        <Text style={styles.userInfo}>None</Text>
+      )}
+
+      {isEditing && (
+        <>
+          <TouchableOpacity onPress={() => setEditKey(key)}>
+            <Text style={styles.addText}>+ Add to {title}</Text>
+          </TouchableOpacity>
+          {editKey === key && (
+            <View style={styles.inputContainer}>
+              <TextInput
+                style={styles.input}
+                placeholder={`Add new to ${title}`}
+                value={newEntry}
+                onChangeText={setNewEntry}
+              />
+              <TouchableOpacity onPress={handleAdd}>
+                <Ionicons name="add-circle" size={24} color="#4CAF50" />
+              </TouchableOpacity>
+            </View>
+          )}
+        </>
+      )}
+    </View>
+  );
 
   return (
     <SafeAreaView style={styles.container}>
@@ -88,49 +150,32 @@ function UserProfileScreen({ navigation }) {
           <Text style={styles.loadingText}>Loading user details...</Text>
         )}
 
+        <TouchableOpacity
+          onPress={() => setIsEditing(!isEditing)}
+          style={[styles.logoutButton, { backgroundColor: isEditing ? "#4CAF50" : "#1B623B" }]}
+        >
+          <Ionicons name={isEditing ? "checkmark" : "create-outline"} size={20} color="white" />
+          <Text style={styles.logoutButtonText}>
+            {isEditing ? "Save Changes" : "Edit Preferences"}
+          </Text>
+        </TouchableOpacity>
+
         {preferences ? (
           <>
-            <Text style={styles.sectionTitle}>Preferences</Text>
-            <Text style={styles.userInfo}>
-              <Ionicons name="alert-circle" size={18} color="#D32F2F" />{" "}
-              <Text style={styles.boldText}>Allergens:</Text>{" "}
-              {preferences.allergen.length > 0
-                ? preferences.allergen.join(", ")
-                : "None"}
-            </Text>
-            <Text style={styles.userInfo}>
-              <Ionicons name="leaf" size={18} color="#388E3C" />{" "}
-              <Text style={styles.boldText}>Diet:</Text>{" "}
-              {preferences.selectedDiets.length > 0
-                ? preferences.selectedDiets.join(", ")
-                : "No preference"}
-            </Text>
-            <Text style={styles.userInfo}>
-              <Ionicons name="flask" size={18} color="#FF9800" />{" "}
-              <Text style={styles.boldText}>Selected Additives:</Text>{" "}
-              {preferences.selectedAdditives.length > 0
-                ? preferences.selectedAdditives.join(", ")
-                : "None"}
-            </Text>
-            <Text style={styles.userInfo}>
-              <Ionicons name="nutrition" size={18} color="#1976D2" />{" "}
-              <Text style={styles.boldText}>Ingredients Avoided:</Text>{" "}
-              {preferences.selectedIngredients.length > 0
-                ? preferences.selectedIngredients.join(", ")
-                : "None"}
-            </Text>
+            {renderEditableSection("Allergens", "allergen")}
+            {renderEditableSection("Diet", "selectedDiets")}
+            {renderEditableSection("Selected Additives", "selectedAdditives")}
+            {renderEditableSection("Ingredients Avoided", "selectedIngredients")}
           </>
         ) : (
           <Text style={styles.loadingText}>Loading preferences...</Text>
         )}
-              <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-        <Ionicons name="log-out-outline" size={20} color="white" />
-        <Text style={styles.logoutButtonText}>Logout</Text>
-      </TouchableOpacity>
+
+        <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+          <Ionicons name="log-out-outline" size={20} color="white" />
+          <Text style={styles.logoutButtonText}>Logout</Text>
+        </TouchableOpacity>
       </ScrollView>
-
-      {/* Logout Button */}
-
 
       <BottomNavBar />
     </SafeAreaView>
@@ -192,6 +237,38 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
     marginLeft: 10,
+  },
+  chip: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#e0f2f1",
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 20,
+    marginRight: 10,
+    marginTop: 6,
+  },
+  removeIcon: {
+    marginLeft: 8,
+    color: "#D32F2F",
+    fontSize: 16,
+  },
+  addText: {
+    color: "#1976D2",
+    marginTop: 10,
+    fontWeight: "600",
+  },
+  inputContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginVertical: 6,
+  },
+  input: {
+    flex: 1,
+    borderBottomWidth: 1,
+    borderColor: "#ccc",
+    padding: 4,
+    marginRight: 10,
   },
 });
 

@@ -1,45 +1,59 @@
 const express = require("express");
 const router = express.Router();
 const mongoose = require("mongoose");
-const { verifyToken } = require("./authentication"); // Import verifyToken middleware
+const { verifyToken } = require("./authentication");
 
 const User = mongoose.model("User");
 const Preference = mongoose.model("Preference");
 
-// POST route to save user preferences (Protected Route)
+// POST or PATCH route to save or update user preferences
 router.post("/preferences", verifyToken, async (req, res) => {
   try {
-    const { allergen, additive, diet, ingredient, nutrition } = req.body;
-    const userId = req.user.userId; // Extract userId from decoded token
+    const { allergen, additive, diet, ingredient, nutrition, action = "replace" } = req.body;
+    const userId = req.user.userId;
 
-    // Check if user exists
     const user = await User.findById(userId);
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
 
-    // Check if preferences already exist for the user
     let userPreference = await Preference.findOne({ user: userId });
 
+    // Helper function to modify arrays
+    const modifyArray = (original, incoming, type) => {
+      if (!Array.isArray(incoming)) return original;
+
+      const setOriginal = new Set(original || []);
+      const setIncoming = new Set(incoming);
+
+      if (type === "add") {
+        return Array.from(new Set([...setOriginal, ...setIncoming]));
+      } else if (type === "remove") {
+        return Array.from([...setOriginal].filter((item) => !setIncoming.has(item)));
+      } else {
+        return incoming; // replace
+      }
+    };
+
     if (userPreference) {
-      // Update existing preferences
-      userPreference.allergen = allergen || userPreference.allergen;
-      userPreference.selectedAdditives = selectedAdditives || userPreference.selectedAdditives;
-      userPreference.selectedDiets = selectedDiets || userPreference.selectedDiets;
-      userPreference.selectedIngredients = selectedIngredients || userPreference.selectedIngredients;
-      userPreference.selectedNutritions = selectedNutritions || userPreference.selectedNutritions;
+      // Update based on action
+      userPreference.allergen = modifyArray(userPreference.allergen, allergen, action);
+      userPreference.selectedAdditives = modifyArray(userPreference.selectedAdditives, additive, action);
+      userPreference.selectedDiets = modifyArray(userPreference.selectedDiets, diet, action);
+      userPreference.selectedIngredients = modifyArray(userPreference.selectedIngredients, ingredient, action);
+      userPreference.selectedNutritions = modifyArray(userPreference.selectedNutritions, nutrition, action);
 
       await userPreference.save();
-      return res.status(200).json({ message: "Preferences updated successfully", userPreference });
+      return res.status(200).json({ message: "Preferences updated", userPreference });
     } else {
-      // Create new preference document
+      // Create new preference document (only for replace or add)
       userPreference = new Preference({
         user: userId,
-        allergen,
-        selectedAdditives: additive,
-        selectedDiets: diet,
-        selectedIngredients: ingredient,
-        selectedNutritions: nutrition,
+        allergen: allergen || [],
+        selectedAdditives: additive || [],
+        selectedDiets: diet || [],
+        selectedIngredients: ingredient || [],
+        selectedNutritions: nutrition || [],
       });
 
       await userPreference.save();
@@ -50,6 +64,7 @@ router.post("/preferences", verifyToken, async (req, res) => {
   }
 });
 
+// GET route to fetch user preferences
 router.get("/user-preferences", verifyToken, async (req, res) => {
   try {
     const userPreference = await Preference.findOne({ user: req.user.userId });
@@ -61,7 +76,5 @@ router.get("/user-preferences", verifyToken, async (req, res) => {
     res.status(500).json({ message: "Server Error", error: error.message });
   }
 });
-
-
 
 module.exports = router;
