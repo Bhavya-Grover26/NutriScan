@@ -61,7 +61,17 @@ const handleNext = async () => {
               style={styles.categoryButton}
               onPress={() => navigation.navigate(`Preference${category.key}`, { user, preferences })}
             >
-              <Icon name={category.icon} size={20} color="white" />
+              <View
+               style={[
+                 category.key === 'Allergen' ? styles.activeIconWrapper : styles.inactiveIconWrapper,
+               ]}
+             >
+               <Icon
+                 name={category.icon}
+                 size={20}
+                 color="white"
+               />
+             </View>
               <Text style={styles.categoryText}>{category.name}</Text>
             </TouchableOpacity>
           ))}
@@ -150,4 +160,14 @@ const styles = StyleSheet.create({
   // Apply Button
   applyButton: { backgroundColor: '#1B623B', padding: 15, borderRadius: 10, alignItems: 'center', marginTop: 20 },
   applyButtonText: { color: 'white', fontSize: 16, fontWeight: 'bold' },
+  activeIconWrapper: {
+    backgroundColor: '#CBDCCB',
+    padding: 10,
+    borderRadius: 25,
+  },
+  
+  inactiveIconWrapper: {
+    padding: 8,
+    borderRadius: 25,
+  },
 });
